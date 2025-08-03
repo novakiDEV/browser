@@ -13,7 +13,6 @@
             overflow: hidden;
         }
 
-
         ::-webkit-scrollbar {
             display: none;
         }
@@ -29,10 +28,6 @@
             position: relative;
             z-index: 1000;
         }
-
-
-
-
 
         .titlebar-title {
             color: #ffffff;
@@ -60,109 +55,6 @@
             position: relative;
         }
 
-        .search-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 15, 17, 0.95);
-            backdrop-filter: blur(10px);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 120px;
-            z-index: 1000;
-            border-radius: 7px;
-        }
-
-        .search-container {
-            width: 600px;
-            max-width: 90%;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            height: 50px;
-            background-color: #1e1e21;
-            border: 1px solid #2a2d33;
-            border-radius: 12px;
-            padding: 0 20px 0 50px;
-            font-size: 16px;
-            color: #ffffff;
-            outline: none;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-
-        .search-input::placeholder {
-            color: #6b6f7c;
-        }
-
-        .search-input:focus {
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            opacity: 0.6;
-        }
-
-        .suggestions {
-            margin-top: 20px;
-            width: 100%;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .suggestion-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background-color: #1e1e21;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .suggestion-item:hover {
-            background-color: #252529;
-        }
-
-        .suggestion-icon {
-            width: 20px;
-            height: 20px;
-            margin-right: 12px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-
-        .suggestion-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .suggestion-title {
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .suggestion-url {
-            color: #6b6f7c;
-            font-size: 12px;
-        }
-
         .webview-container {
             width: 100%;
             height: 100%;
@@ -183,21 +75,8 @@
     </div>
     <div class="content-area">
         <div class="content-box">
-            <div class="search-overlay" id="searchOverlay">
-                <div class="search-container">
-                    <div style="position: relative;">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search...">
-                    </div>
-                    <div class="suggestions" id="suggestions">
-                    </div>
-                </div>
-            </div>
             <div class="webview-container">
-                <webview id="webview" src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
+                <webview src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
             </div>
         </div>
     </div>
@@ -207,64 +86,6 @@
             const titlebarText = document.getElementById('titlebar-text');
             const documentTitle = document.title;
             titlebarText.textContent = documentTitle;
-        }
-
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-
-        function formatUrl(input) {
-            if (input.includes('.') && !input.includes(' ')) {
-                if (!input.startsWith('http://') && !input.startsWith('https://')) {
-                    return 'https://' + input;
-                }
-                return input;
-            }
-            return null;
-        }
-
-        function navigateToUrl(url) {
-            const webview = document.getElementById('webview');
-            webview.src = url;
-            hideSearch();
-        }
-
-        function performSearch(query) {
-            const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-            navigateToUrl(searchUrl);
-        }
-
-        function showSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            const input = document.getElementById('searchInput');
-            overlay.style.display = 'flex';
-            input.focus();
-        }
-
-        function hideSearch() {
-            const overlay = document.getElementById('searchOverlay');
-            const input = document.getElementById('searchInput');
-            overlay.style.display = 'none';
-            input.value = '';
-        }
-
-        function handleSearchInput() {
-            const input = document.getElementById('searchInput');
-            const query = input.value.trim();
-
-            if (query) {
-                const url = formatUrl(query);
-                if (url && isValidUrl(url)) {
-                    navigateToUrl(url);
-                } else {
-                    performSearch(query);
-                }
-            }
         }
 
         window.addEventListener('DOMContentLoaded', syncTitle);
@@ -292,33 +113,10 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             const webview = document.querySelector('webview');
-            const searchInput = document.getElementById('searchInput');
-            const searchOverlay = document.getElementById('searchOverlay');
 
             webview.addEventListener('dom-ready', () => {
                 webview.getWebContents().on('context-menu', (event, params) => {
                 });
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' && !searchOverlay.style.display.includes('flex')) {
-                    e.preventDefault();
-                    showSearch();
-                } else if (e.key === 'Escape') {
-                    hideSearch();
-                }
-            });
-
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    handleSearchInput();
-                }
-            });
-
-            searchOverlay.addEventListener('click', (e) => {
-                if (e.target === searchOverlay) {
-                    hideSearch();
-                }
             });
         });
     </script>
