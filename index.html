@@ -407,24 +407,46 @@
             currentWebview.src = url;
             updateTabUrl(currentTabId, url);
         }
-        function updateUrlBar(url) {
+        function updateUrlBar(url, forEditing = false) {
             try {
                 const urlObj = new URL(url);
-                let cleanUrl = urlObj.hostname;
-                cleanUrl = cleanUrl.replace(/^www\./, '');
                 
-                if (urlObj.pathname && urlObj.pathname !== '/' && !urlObj.pathname.includes('search')) {
-                    cleanUrl += urlObj.pathname;
-                    if (cleanUrl.endsWith('/')) {
-                        cleanUrl = cleanUrl.slice(0, -1);
+                if (forEditing) {
+                    let fullUrl = urlObj.hostname;
+                    fullUrl = fullUrl.replace(/^www\./, '');
+                    if (urlObj.pathname && urlObj.pathname !== '/') {
+                        fullUrl += urlObj.pathname;
                     }
+                    if (urlObj.search) {
+                        fullUrl += urlObj.search;
+                    }
+                    urlBar.value = fullUrl;
+                    urlBar.dataset.fullUrl = url;
+                } else {
+                    let cleanUrl = urlObj.hostname;
+                    cleanUrl = cleanUrl.replace(/^www\./, '');
+                    
+                    urlBar.value = cleanUrl;
+                    urlBar.dataset.fullUrl = url;
                 }
-                
-                urlBar.value = cleanUrl;
             } catch (e) {
                 urlBar.value = url;
+                urlBar.dataset.fullUrl = url;
             }
         }
+        urlBar.addEventListener('focus', () => {
+            if (urlBar.dataset.fullUrl) {
+                updateUrlBar(urlBar.dataset.fullUrl, true);
+            }
+        });
+
+        urlBar.addEventListener('blur', () => {
+
+            if (urlBar.dataset.fullUrl) {
+                updateUrlBar(urlBar.dataset.fullUrl, false);
+            }
+        });
+
         urlBar.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const input = urlBar.value.trim();
@@ -437,6 +459,7 @@
                     const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
                     navigateToUrl(searchUrl);
                 }
+                urlBar.blur();
             }
         });
         const backButton = document.getElementById('back-button');
