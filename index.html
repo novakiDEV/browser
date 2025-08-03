@@ -179,8 +179,7 @@
             const urlBar = document.querySelector('.url-bar');
             try {
                 const urlObj = new URL(url);
-                let cleanUrl = urlObj.href;
-                cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
+                let cleanUrl = urlObj.hostname + urlObj.pathname;
                 cleanUrl = cleanUrl.replace(/^www\./, '');
                 if (cleanUrl.endsWith('/')) {
                     cleanUrl = cleanUrl.slice(0, -1);
