@@ -15,7 +15,7 @@ function createWindow() {
     titleBarOverlay: {
       color: '#0f0f11',
       symbolColor: '#6b6f7c',
-      height: 40
+      height: 10
     },
     webPreferences: {
       nodeIntegration: true,
