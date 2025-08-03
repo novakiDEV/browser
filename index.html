@@ -256,6 +256,12 @@
                 if (tabId === currentTabId) updateUrlBar(webview.src);
             });
 
+            webview.addEventListener('did-fail-load', (event) => {
+                if (event.errorCode === -105) {
+                    webview.src = 'pages/error/105.html';
+                }
+            });
+
             return webview;
         }
         function addTab(url = 'https://google.com/') {

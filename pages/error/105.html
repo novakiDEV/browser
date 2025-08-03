@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Site Can't Be Reached</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #0f0f11;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c0c0c0;
+        }
+        .error-container {
+            text-align: center;
+            max-width: 400px;
+        }
+        .error-title {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+        .error-description {
+            font-size: 16px;
+            margin-bottom: 32px;
+            color: #9ca3af;
+        }
+        .back-button {
+            background-color: #1e1e21;
+            border: 1px solid #2a2d33;
+            border-radius: 8px;
+            color: #c0c0c0;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .back-button:hover {
+            background-color: #2a2d33;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1 class="error-title">Site can't be reached</h1>
+        <p class="error-description">
+            The website could not be found. Check the address and try again.
+        </p>
+        <button class="back-button" onclick="history.back()">
+            Go Back
+        </button>
+    </div>
+</body>
+</html>
