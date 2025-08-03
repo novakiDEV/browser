@@ -33,7 +33,7 @@
             height: 100%;
             -webkit-app-region: drag;
         }
-        .custom-titlebar button {
+        .custom-titlebar button, .tabs-button {
             background-color: #1e1e21;
             border: 1px solid #2a2d33;
             border-radius: 6px;
@@ -48,16 +48,16 @@
             justify-content: center;
             transition: background-color 0.2s ease;
         }
-        .custom-titlebar button:hover {
+        .custom-titlebar button:hover, .tabs-button:hover {
             background-color: #2a2d33;
         }
-        .custom-titlebar button img {
+        .custom-titlebar button img, .tabs-button img {
             width: 12px;
             height: 12px;
             filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
             transition: filter 0.2s ease;
         }
-        .custom-titlebar button:hover img {
+        .custom-titlebar button:hover img, .tabs-button:hover img {
             filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
         .url-bar {
@@ -84,32 +84,8 @@
             -webkit-app-region: no-drag;
         }
         .tabs-button {
-            background-color: #1e1e21;
-            border: 1px solid #2a2d33;
-            border-radius: 6px;
-            color: #6b6f7c;
-            font-size: 12px;
-            height: 24px;
-            width: 50px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 0;
             user-select: none;
-            transition: background-color 0.2s ease;
-        }
-        .tabs-button:hover {
-            background-color: #2a2d33;
-        }
-        .tabs-button img {
-            width: 12px;
-            height: 12px;
-            filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
-            transition: filter 0.2s ease;
-        }
-        .tabs-button:hover img {
-            filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
         .tabs-dropdown-content {
             display: none;
@@ -248,39 +224,38 @@
         let tabIdCounter = 0;
         function createWebview(url, tabId) {
             const webview = document.createElement('webview');
-            webview.setAttribute('allowpopups', '');
-            webview.setAttribute('prefers-color-scheme', 'dark');
-            webview.setAttribute('webpreferences', 'contextIsolation=false,enableRemoteModule=true,contextMenu=true');
-            webview.style.width = '100%';
-            webview.style.height = '100%';
-            webview.style.border = 'none';
+            Object.assign(webview, {
+                allowpopups: '',
+                'prefers-color-scheme': 'dark',
+                webpreferences: 'contextIsolation=false,enableRemoteModule=true,contextMenu=true'
+            });
+            Object.assign(webview.style, {
+                width: '100%',
+                height: '100%',
+                border: 'none'
+            });
             webview.dataset.tabId = tabId;
             webview.src = url;
-            webview.addEventListener('did-navigate', (event) => {
-                if (tabId === currentTabId) {
-                    updateUrlBar(event.url);
-                }
-                updateTabUrl(tabId, event.url);
-                updateTabTitle(tabId, webview.getTitle());
+
+            // Combined navigation events
+            ['did-navigate', 'did-navigate-in-page'].forEach(event => {
+                webview.addEventListener(event, (e) => {
+                    if (tabId === currentTabId) updateUrlBar(e.url);
+                    updateTab(tabId, 'url', e.url);
+                    updateTab(tabId, 'title', webview.getTitle());
+                    renderTabs();
+                });
+            });
+
+            webview.addEventListener('page-title-updated', (e) => {
+                updateTab(tabId, 'title', e.title);
                 renderTabs();
             });
-            webview.addEventListener('did-navigate-in-page', (event) => {
-                if (tabId === currentTabId) {
-                    updateUrlBar(event.url);
-                }
-                updateTabUrl(tabId, event.url);
-                updateTabTitle(tabId, webview.getTitle());
-                renderTabs();
-            });
-            webview.addEventListener('page-title-updated', (event) => {
-                updateTabTitle(tabId, event.title);
-                renderTabs();
-            });
+
             webview.addEventListener('dom-ready', () => {
-                if (tabId === currentTabId) {
-                    updateUrlBar(webview.src);
-                }
+                if (tabId === currentTabId) updateUrlBar(webview.src);
             });
+
             return webview;
         }
         function addTab(url = 'https://google.com/') {
@@ -328,16 +303,14 @@
                 webviewContainer.removeChild(webviewContainer.firstChild);
             }
         }
-        function updateTabUrl(id, url) {
+        function updateTab(id, property, value) {
             const tab = tabs.find(t => t.id === id);
             if (tab) {
-                tab.url = url;
-            }
-        }
-        function updateTabTitle(id, title) {
-            const tab = tabs.find(t => t.id === id);
-            if (tab && title) {
-                tab.title = title.length > 30 ? title.slice(0, 27) + '...' : title;
+                if (property === 'title' && value) {
+                    tab.title = value.length > 30 ? value.slice(0, 27) + '...' : value;
+                } else {
+                    tab[property] = value;
+                }
             }
         }
         function renderTabs() {
@@ -402,92 +375,67 @@
             return null;
         }
         function navigateToUrl(url) {
-            const currentWebview = webviewContainer.querySelector('webview');
-            if (!currentWebview) return;
-            currentWebview.src = url;
-            updateTabUrl(currentTabId, url);
+            const webview = getCurrentWebview();
+            if (webview) {
+                webview.src = url;
+                updateTab(currentTabId, 'url', url);
+            }
         }
         function updateUrlBar(url, forEditing = false) {
             try {
                 const urlObj = new URL(url);
+                let displayUrl = urlObj.hostname.replace(/^www\./, '');
                 
                 if (forEditing) {
-                    let fullUrl = urlObj.hostname;
-                    fullUrl = fullUrl.replace(/^www\./, '');
-                    if (urlObj.pathname && urlObj.pathname !== '/') {
-                        fullUrl += urlObj.pathname;
-                    }
-                    if (urlObj.search) {
-                        fullUrl += urlObj.search;
-                    }
-                    urlBar.value = fullUrl;
-                    urlBar.dataset.fullUrl = url;
-                } else {
-                    let cleanUrl = urlObj.hostname;
-                    cleanUrl = cleanUrl.replace(/^www\./, '');
-                    
-                    urlBar.value = cleanUrl;
-                    urlBar.dataset.fullUrl = url;
+                    if (urlObj.pathname !== '/') displayUrl += urlObj.pathname;
+                    if (urlObj.search) displayUrl += urlObj.search;
                 }
+                
+                urlBar.value = displayUrl;
+                urlBar.dataset.fullUrl = url;
             } catch (e) {
                 urlBar.value = url;
                 urlBar.dataset.fullUrl = url;
             }
         }
+        // URL bar event handlers
         urlBar.addEventListener('focus', () => {
-            if (urlBar.dataset.fullUrl) {
-                updateUrlBar(urlBar.dataset.fullUrl, true);
-            }
+            if (urlBar.dataset.fullUrl) updateUrlBar(urlBar.dataset.fullUrl, true);
         });
 
         urlBar.addEventListener('blur', () => {
-
-            if (urlBar.dataset.fullUrl) {
-                updateUrlBar(urlBar.dataset.fullUrl, false);
-            }
+            if (urlBar.dataset.fullUrl) updateUrlBar(urlBar.dataset.fullUrl, false);
         });
 
         urlBar.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const input = urlBar.value.trim();
                 if (!input) return;
+                
                 const url = formatUrl(input);
-                if (url) {
-                    navigateToUrl(url);
-                } else {
-                    const searchQuery = encodeURIComponent(input);
-                    const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
-                    navigateToUrl(searchUrl);
-                }
+                const finalUrl = url || `https://www.google.com/search?q=${encodeURIComponent(input)}`;
+                navigateToUrl(finalUrl);
                 urlBar.blur();
             }
         });
-        const backButton = document.getElementById('back-button');
-        const forwardButton = document.getElementById('forward-button');
-        const reloadButton = document.getElementById('reload-button');
-        const settingsButton = document.getElementById('settings-button');
+
+        // Navigation button handlers
+        ['back', 'forward', 'reload'].forEach(action => {
+            document.getElementById(`${action}-button`).addEventListener('click', () => {
+                const webview = getCurrentWebview();
+                if (!webview) return;
+                
+                if (action === 'back' && webview.canGoBack()) webview.goBack();
+                else if (action === 'forward' && webview.canGoForward()) webview.goForward();
+                else if (action === 'reload') webview.reload();
+            });
+        });
+        // Settings and utility functions
         function getCurrentWebview() {
             return webviewContainer.querySelector('webview');
         }
-        backButton.addEventListener('click', () => {
-            const webview = getCurrentWebview();
-            if (webview && webview.canGoBack()) {
-                webview.goBack();
-            }
-        });
-        forwardButton.addEventListener('click', () => {
-            const webview = getCurrentWebview();
-            if (webview && webview.canGoForward()) {
-                webview.goForward();
-            }
-        });
-        reloadButton.addEventListener('click', () => {
-            const webview = getCurrentWebview();
-            if (webview) {
-                webview.reload();
-            }
-        });
-        settingsButton.addEventListener('click', () => {
+
+        document.getElementById('settings-button').addEventListener('click', () => {
             window.location.href = 'pages/settings.html';
         });
         window.addEventListener('DOMContentLoaded', () => {
