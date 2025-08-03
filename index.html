@@ -151,17 +151,24 @@
         .tab-close-btn {
             background: none;
             border: none;
-            color: #888;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            line-height: 14px;
             padding: 0;
             margin-left: 8px;
             user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
         }
-        .tab-close-btn:hover {
-            color: #f44336;
+        .tab-close-btn img {
+            width: 10px;
+            height: 10px;
+            filter: brightness(0) saturate(100%) invert(53%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(88%) contrast(89%);
+            transition: filter 0.2s ease;
+        }
+        .tab-close-btn:hover img {
+            filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
         }
         .add-tab-btn {
             display: block;
@@ -347,8 +354,12 @@
                 });
                 const closeBtn = document.createElement('button');
                 closeBtn.classList.add('tab-close-btn');
-                closeBtn.textContent = '×';
                 closeBtn.title = 'Close Tab';
+                
+                const closeIcon = document.createElement('img');
+                closeIcon.src = 'assets/close.png';
+                closeIcon.alt = 'Close';
+                closeBtn.appendChild(closeIcon);
                 closeBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     closeTab(tab.id);
