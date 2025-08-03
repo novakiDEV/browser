@@ -22,15 +22,35 @@
             background-color: #0f0f11;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0 12px;
+            justify-content: flex-start;
+            padding: 0 12px 0 8px;
             -webkit-app-region: drag;
             position: relative;
             z-index: 1000;
+            gap: 8px;
+        }
+
+        .titlebar-spacer {
+            width: 140px;
+            min-width: 140px;
+            height: 100%;
+            -webkit-app-region: drag;
+        }
+
+        .custom-titlebar button {
+            background-color: #1e1e21;
+            border: 1px solid #2a2d33;
+            border-radius: 6px;
+            color: #6b6f7c;
+            font-size: 12px;
+            height: 24px;
+            width: 50px;
+            cursor: pointer;
+            -webkit-app-region: no-drag;
         }
 
         .url-bar {
-            width: 400px;
+            flex: 1;
             height: 24px;
             background-color: #1e1e21;
             border: 1px solid #2a2d33;
@@ -40,17 +60,15 @@
             color: #6b6f7c;
             outline: none;
             -webkit-app-region: no-drag;
-            text-align: center;
             font-weight: 400;
             opacity: 0.9;
             transition: color 0.2s ease;
+            text-align: center;
         }
 
         .url-bar:focus {
             color: #c0c0c0;
         }
-
-
 
         .content-area {
             height: calc(100vh - 40px);
@@ -86,12 +104,17 @@
 </head>
 <body>
     <div class="custom-titlebar">
+        <button id="back-button">&larr;</button>
+        <button id="forward-button">&rarr;</button>
+        <button id="reload-button">&#10227;</button>
+        <button id="settings-button">&#9881;</button>
         <input type="text" class="url-bar">
+        <div class="titlebar-spacer"></div>
     </div>
     <div class="content-area">
         <div class="content-box">
             <div class="webview-container">
-                <webview src="https://google.com/" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
+                <webview id="webview" src="https://google.com/" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
             </div>
         </div>
     </div>
@@ -100,7 +123,7 @@
         function syncTitle() {
             const titlebarText = document.getElementById('titlebar-text');
             const documentTitle = document.title;
-            titlebarText.textContent = documentTitle;
+            if (titlebarText) titlebarText.textContent = documentTitle;
         }
 
         window.addEventListener('DOMContentLoaded', syncTitle);
@@ -126,8 +149,6 @@
             }
         }, 100);
 
-
-
         function isValidUrl(input) {
             const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/;
             return urlPattern.test(input);
@@ -135,24 +156,20 @@
 
         function formatUrl(input) {
             input = input.trim();
-
             if (input.startsWith('http://') || input.startsWith('https://')) {
                 return input;
             }
-
             if (input.startsWith('www.')) {
                 return 'https://' + input;
             }
-
             if (isValidUrl(input)) {
                 return 'https://' + input;
             }
-
             return null;
         }
 
         function navigateToUrl(url) {
-            const webview = document.querySelector('webview');
+            const webview = document.getElementById('webview');
             const urlBar = document.querySelector('.url-bar');
             webview.src = url;
             urlBar.blur();
@@ -162,19 +179,21 @@
             const urlBar = document.querySelector('.url-bar');
             try {
                 const urlObj = new URL(url);
-                urlBar.value = urlObj.hostname;
+                urlBar.value = urlObj.href;
             } catch (e) {
                 urlBar.value = url;
             }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const webview = document.querySelector('webview');
+            const webview = document.getElementById('webview');
             const urlBar = document.querySelector('.url-bar');
+            const backButton = document.getElementById('back-button');
+            const forwardButton = document.getElementById('forward-button');
+            const reloadButton = document.getElementById('reload-button');
+            const settingsButton = document.getElementById('settings-button');
 
             webview.addEventListener('dom-ready', () => {
-                webview.getWebContents().on('context-menu', (event, params) => {
-                });
                 updateUrlBar(webview.src);
             });
 
@@ -189,14 +208,37 @@
             urlBar.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     const input = urlBar.value.trim();
-
                     if (input) {
                         const url = formatUrl(input);
                         if (url) {
                             navigateToUrl(url);
+                        } else {
+                            const searchQuery = encodeURIComponent(input);
+                            const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
+                            navigateToUrl(searchUrl);
                         }
                     }
                 }
+            });
+
+            backButton.addEventListener('click', () => {
+                if (webview.canGoBack()) {
+                    webview.goBack();
+                }
+            });
+
+            forwardButton.addEventListener('click', () => {
+                if (webview.canGoForward()) {
+                    webview.goForward();
+                }
+            });
+
+            reloadButton.addEventListener('click', () => {
+                webview.reload();
+            });
+
+            settingsButton.addEventListener('click', () => {
+                window.location.href = 'pages/settings.html';
             });
         });
     </script>

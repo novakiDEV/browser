@@ -1,1 +1,61 @@
-// settings
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>settings</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f11;
+            color: #c0c0c0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        .custom-titlebar {
+            height: 40px;
+            background-color: #0f0f11;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            user-select: none;
+        }
+        .custom-titlebar button {
+            background-color: #1e1e21;
+            border: 1px solid #2a2d33;
+            border-radius: 6px;
+            color: #6b6f7c;
+            font-size: 12px;
+            height: 24px;
+            width: 50px;
+            cursor: pointer;
+        }
+        .page-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #c0c0c0;
+            margin-left: 8px;
+        }
+        .content-area {
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-titlebar">
+        <button id="back-button">&larr;</button>
+        <div class="page-title">settings</div>
+    </div>
+    <div class="content-area">
+        <h1>settings</h1>
+        <p>ima just leave it like this for now</p>
+    </div>
+
+    <script>
+        document.getElementById('back-button').addEventListener('click', () => {
+            window.location.href = '../index.html';
+        });
+    </script>
+</body>
+</html>
