@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>cnvrs Browser</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0f0f11;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+        }
+
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .custom-titlebar {
+            height: 32px;
+            background-color: #0f0f11;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 12px;
+            -webkit-app-region: drag;
+            position: relative;
+            z-index: 1000;
+        }
+
+
+
+
+
+        .titlebar-title {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0.8;
+            user-select: none;
+        }
+
+        .content-area {
+            height: calc(100vh - 32px);
+            background-color: #0f0f11;
+            padding: 0 8px 8px 8px;
+            box-sizing: border-box;
+        }
+
+        .content-box {
+            width: 100%;
+            height: 100%;
+            background-color: #151518;
+            border-radius: 8px;
+            border: 1px solid #2a2d33;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .webview-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        webview {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="custom-titlebar">
+        <div class="titlebar-title" id="titlebar-text">cnvrs Browser</div>
+    </div>
+    <div class="content-area">
+        <div class="content-box">
+            <div class="webview-container">
+                <webview src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function syncTitle() {
+            const titlebarText = document.getElementById('titlebar-text');
+            const documentTitle = document.title;
+            titlebarText.textContent = documentTitle;
+        }
+
+
+        window.addEventListener('DOMContentLoaded', syncTitle);
+
+
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' && mutation.target.nodeName === 'TITLE') {
+                    syncTitle();
+                }
+            });
+        });
+
+
+        const titleElement = document.querySelector('title');
+        if (titleElement) {
+            observer.observe(titleElement, { childList: true });
+        }
+
+
+        let lastTitle = document.title;
+        setInterval(() => {
+            if (document.title !== lastTitle) {
+                lastTitle = document.title;
+                syncTitle();
+            }
+        }, 100);
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const webview = document.querySelector('webview');
+
+
+            webview.addEventListener('dom-ready', () => {
+                webview.getWebContents().on('context-menu', (event, params) => {
+    
+                });
+            });
+        });
+    </script>
+</body>
+</html>

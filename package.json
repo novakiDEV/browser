@@ -1,0 +1,23 @@
+{
+  "name": "designweb",
+  "version": "1.0.0",
+  "description": "ajshdkfkjalsfh",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "electron",
+    "design",
+    "desktop-app"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^37.2.5"
+  }
+}
