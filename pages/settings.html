@@ -22,14 +22,22 @@
             user-select: none;
         }
         .custom-titlebar button {
-            background-color: #1e1e21;
-            border: 1px solid #2a2d33;
-            border-radius: 6px;
-            color: #6b6f7c;
+            background: transparent;
+            border: none;
+            color: transparent;
             font-size: 12px;
             height: 24px;
-            width: 50px;
+            width: 24px;
             cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+        .custom-titlebar button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
         }
 
         .custom-titlebar button img {
@@ -37,6 +45,9 @@
             height: 12px;
             filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
             transition: filter 0.2s ease;
+        }
+        .custom-titlebar button:hover img {
+            filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
 
         .page-title {
