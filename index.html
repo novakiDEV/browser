@@ -60,9 +60,6 @@
             position: relative;
         }
 
-
-
-        
         .search-overlay {
             position: absolute;
             top: 0;
@@ -166,19 +163,12 @@
             font-size: 12px;
         }
 
-
-
-
-
-
-        
         .webview-container {
             width: 100%;
             height: 100%;
             border-radius: 7px;
             overflow: hidden;
         }
-
 
         webview {
             width: 100%;
@@ -193,23 +183,140 @@
     </div>
     <div class="content-area">
         <div class="content-box">
+            <div class="search-overlay" id="searchOverlay">
+                <div class="search-container">
+                    <div style="position: relative;">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" class="search-input" id="searchInput" placeholder="Search...">
+                    </div>
+                    <div class="suggestions" id="suggestions">
+                        <div class="suggestion-item" onclick="navigateToUrl('https://www.roblox.com')">
+                            <div class="suggestion-icon" style="background-color: #00a2ff;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">Roblox</div>
+                                <div class="suggestion-url">roblox.com</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://www.youtube.com')">
+                            <div class="suggestion-icon" style="background-color: #ff0000;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">YouTube</div>
+                                <div class="suggestion-url">youtube.com</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://example.com')">
+                            <div class="suggestion-icon" style="background-color: #666;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">Example Domain</div>
+                                <div class="suggestion-url">example.com</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://github.com')">
+                            <div class="suggestion-icon" style="background-color: #333;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">GitHub</div>
+                                <div class="suggestion-url">github.com</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://presetshare.com')">
+                            <div class="suggestion-icon" style="background-color: #8b5cf6;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">Free Presets For VST Synthesizers</div>
+                                <div class="suggestion-url">presetshare.com</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://soundcloud.com/discover')">
+                            <div class="suggestion-icon" style="background-color: #ff5500;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">Discover the top streamed music and songs online on Soundcloud</div>
+                                <div class="suggestion-url">soundcloud.com/discover</div>
+                            </div>
+                        </div>
+                        <div class="suggestion-item" onclick="navigateToUrl('https://pinterest.com')">
+                            <div class="suggestion-icon" style="background-color: #e60023;"></div>
+                            <div class="suggestion-content">
+                                <div class="suggestion-title">(650) Pinterest</div>
+                                <div class="suggestion-url">pinterest.com</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="webview-container">
-                <webview src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
+                <webview id="webview" src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
             </div>
         </div>
     </div>
 
     <script>
-
         function syncTitle() {
             const titlebarText = document.getElementById('titlebar-text');
             const documentTitle = document.title;
             titlebarText.textContent = documentTitle;
         }
 
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function formatUrl(input) {
+            if (input.includes('.') && !input.includes(' ')) {
+                if (!input.startsWith('http://') && !input.startsWith('https://')) {
+                    return 'https://' + input;
+                }
+                return input;
+            }
+            return null;
+        }
+
+        function navigateToUrl(url) {
+            const webview = document.getElementById('webview');
+            webview.src = url;
+            hideSearch();
+        }
+
+        function performSearch(query) {
+            const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+            navigateToUrl(searchUrl);
+        }
+
+        function showSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            const input = document.getElementById('searchInput');
+            overlay.style.display = 'flex';
+            input.focus();
+        }
+
+        function hideSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            const input = document.getElementById('searchInput');
+            overlay.style.display = 'none';
+            input.value = '';
+        }
+
+        function handleSearchInput() {
+            const input = document.getElementById('searchInput');
+            const query = input.value.trim();
+
+            if (query) {
+                const url = formatUrl(query);
+                if (url && isValidUrl(url)) {
+                    navigateToUrl(url);
+                } else {
+                    performSearch(query);
+                }
+            }
+        }
 
         window.addEventListener('DOMContentLoaded', syncTitle);
-
 
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
@@ -219,12 +326,10 @@
             });
         });
 
-
         const titleElement = document.querySelector('title');
         if (titleElement) {
             observer.observe(titleElement, { childList: true });
         }
-
 
         let lastTitle = document.title;
         setInterval(() => {
@@ -234,15 +339,35 @@
             }
         }, 100);
 
-
         window.addEventListener('DOMContentLoaded', () => {
             const webview = document.querySelector('webview');
-
+            const searchInput = document.getElementById('searchInput');
+            const searchOverlay = document.getElementById('searchOverlay');
 
             webview.addEventListener('dom-ready', () => {
                 webview.getWebContents().on('context-menu', (event, params) => {
-    
                 });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !searchOverlay.style.display.includes('flex')) {
+                    e.preventDefault();
+                    showSearch();
+                } else if (e.key === 'Escape') {
+                    hideSearch();
+                }
+            });
+
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearchInput();
+                }
+            });
+
+            searchOverlay.addEventListener('click', (e) => {
+                if (e.target === searchOverlay) {
+                    hideSearch();
+                }
             });
         });
     </script>
