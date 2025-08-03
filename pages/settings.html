@@ -31,6 +31,14 @@
             width: 50px;
             cursor: pointer;
         }
+
+        .custom-titlebar button img {
+            width: 12px;
+            height: 12px;
+            filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
+            transition: filter 0.2s ease;
+        }
+
         .page-title {
             font-weight: 600;
             font-size: 14px;
@@ -44,7 +52,7 @@
 </head>
 <body>
     <div class="custom-titlebar">
-        <button id="back-button">&larr;</button>
+        <button id="back-button"><img src="assets/back.png" alt="Back"></button>
         <div class="page-title">settings</div>
     </div>
     <div class="content-area">
