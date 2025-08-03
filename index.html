@@ -399,11 +399,16 @@
         function updateUrlBar(url) {
             try {
                 const urlObj = new URL(url);
-                let cleanUrl = urlObj.hostname + urlObj.pathname;
+                let cleanUrl = urlObj.hostname;
                 cleanUrl = cleanUrl.replace(/^www\./, '');
-                if (cleanUrl.endsWith('/')) {
-                    cleanUrl = cleanUrl.slice(0, -1);
+                
+                if (urlObj.pathname && urlObj.pathname !== '/' && !urlObj.pathname.includes('search')) {
+                    cleanUrl += urlObj.pathname;
+                    if (cleanUrl.endsWith('/')) {
+                        cleanUrl = cleanUrl.slice(0, -1);
+                    }
                 }
+                
                 urlBar.value = cleanUrl;
             } catch (e) {
                 urlBar.value = url;
