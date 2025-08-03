@@ -47,6 +47,25 @@
             width: 50px;
             cursor: pointer;
             -webkit-app-region: no-drag;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .custom-titlebar button:hover {
+            background-color: #2a2d33;
+        }
+
+        .custom-titlebar button img {
+            width: 12px;
+            height: 12px;
+            filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
+            transition: filter 0.2s ease;
+        }
+
+        .custom-titlebar button:hover img {
+            filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
 
         .url-bar {
@@ -104,10 +123,10 @@
 </head>
 <body>
     <div class="custom-titlebar">
-        <button id="back-button">&larr;</button>
-        <button id="forward-button">&rarr;</button>
-        <button id="reload-button">&#10227;</button>
-        <button id="settings-button">&#9881;</button>
+        <button id="back-button"><img src="assets/back.png" alt="Back"></button>
+        <button id="forward-button"><img src="assets/forward.png" alt="Forward"></button>
+        <button id="reload-button"><img src="assets/refresh.png" alt="Refresh"></button>
+        <button id="settings-button"><img src="assets/settings.png" alt="Settings"></button>
         <input type="text" class="url-bar">
         <div class="titlebar-spacer"></div>
     </div>
