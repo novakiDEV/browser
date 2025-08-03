@@ -18,7 +18,7 @@
         }
 
         .custom-titlebar {
-            height: 32px;
+            height: 40px;
             background-color: #0f0f11;
             display: flex;
             align-items: center;
@@ -29,16 +29,31 @@
             z-index: 1000;
         }
 
-        .titlebar-title {
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.8;
-            user-select: none;
+        .url-bar {
+            width: 400px;
+            height: 24px;
+            background-color: #1e1e21;
+            border: 1px solid #2a2d33;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 12px;
+            color: #6b6f7c;
+            outline: none;
+            -webkit-app-region: no-drag;
+            text-align: center;
+            font-weight: 400;
+            opacity: 0.9;
+            transition: color 0.2s ease;
         }
 
+        .url-bar:focus {
+            color: #c0c0c0;
+        }
+
+
+
         .content-area {
-            height: calc(100vh - 32px);
+            height: calc(100vh - 40px);
             background-color: #0f0f11;
             padding: 0 8px 8px 8px;
             box-sizing: border-box;
@@ -71,12 +86,12 @@
 </head>
 <body>
     <div class="custom-titlebar">
-        <div class="titlebar-title" id="titlebar-text">cnvrs Browser</div>
+        <input type="text" class="url-bar">
     </div>
     <div class="content-area">
         <div class="content-box">
             <div class="webview-container">
-                <webview src="https://www.google.com" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
+                <webview src="https://google.com/" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
             </div>
         </div>
     </div>
@@ -111,12 +126,77 @@
             }
         }, 100);
 
+
+
+        function isValidUrl(input) {
+            const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/;
+            return urlPattern.test(input);
+        }
+
+        function formatUrl(input) {
+            input = input.trim();
+
+            if (input.startsWith('http://') || input.startsWith('https://')) {
+                return input;
+            }
+
+            if (input.startsWith('www.')) {
+                return 'https://' + input;
+            }
+
+            if (isValidUrl(input)) {
+                return 'https://' + input;
+            }
+
+            return null;
+        }
+
+        function navigateToUrl(url) {
+            const webview = document.querySelector('webview');
+            const urlBar = document.querySelector('.url-bar');
+            webview.src = url;
+            urlBar.blur();
+        }
+
+        function updateUrlBar(url) {
+            const urlBar = document.querySelector('.url-bar');
+            try {
+                const urlObj = new URL(url);
+                urlBar.value = urlObj.hostname;
+            } catch (e) {
+                urlBar.value = url;
+            }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const webview = document.querySelector('webview');
+            const urlBar = document.querySelector('.url-bar');
 
             webview.addEventListener('dom-ready', () => {
                 webview.getWebContents().on('context-menu', (event, params) => {
                 });
+                updateUrlBar(webview.src);
+            });
+
+            webview.addEventListener('did-navigate', (event) => {
+                updateUrlBar(event.url);
+            });
+
+            webview.addEventListener('did-navigate-in-page', (event) => {
+                updateUrlBar(event.url);
+            });
+
+            urlBar.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const input = urlBar.value.trim();
+
+                    if (input) {
+                        const url = formatUrl(input);
+                        if (url) {
+                            navigateToUrl(url);
+                        }
+                    }
+                }
             });
         });
     </script>
