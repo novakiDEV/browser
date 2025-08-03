@@ -179,7 +179,13 @@
             const urlBar = document.querySelector('.url-bar');
             try {
                 const urlObj = new URL(url);
-                urlBar.value = urlObj.href;
+                let cleanUrl = urlObj.href;
+                cleanUrl = cleanUrl.replace(/^https?:\/\//, '');
+                cleanUrl = cleanUrl.replace(/^www\./, '');
+                if (cleanUrl.endsWith('/')) {
+                    cleanUrl = cleanUrl.slice(0, -1);
+                }
+                urlBar.value = cleanUrl;
             } catch (e) {
                 urlBar.value = url;
             }
