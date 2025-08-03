@@ -12,11 +12,9 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
         }
-
         ::-webkit-scrollbar {
             display: none;
         }
-
         .custom-titlebar {
             height: 40px;
             background-color: #0f0f11;
@@ -29,14 +27,12 @@
             z-index: 1000;
             gap: 8px;
         }
-
         .titlebar-spacer {
             width: 140px;
             min-width: 140px;
             height: 100%;
             -webkit-app-region: drag;
         }
-
         .custom-titlebar button {
             background-color: #1e1e21;
             border: 1px solid #2a2d33;
@@ -52,22 +48,18 @@
             justify-content: center;
             transition: background-color 0.2s ease;
         }
-
         .custom-titlebar button:hover {
             background-color: #2a2d33;
         }
-
         .custom-titlebar button img {
             width: 12px;
             height: 12px;
             filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
             transition: filter 0.2s ease;
         }
-
         .custom-titlebar button:hover img {
             filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
-
         .url-bar {
             flex: 1;
             height: 24px;
@@ -84,18 +76,113 @@
             transition: color 0.2s ease;
             text-align: center;
         }
-
         .url-bar:focus {
             color: #c0c0c0;
         }
-
+        .tabs-dropdown {
+            position: relative;
+            -webkit-app-region: no-drag;
+        }
+        .tabs-button {
+            background-color: #1e1e21;
+            border: 1px solid #2a2d33;
+            border-radius: 6px;
+            color: #6b6f7c;
+            font-size: 12px;
+            height: 24px;
+            width: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            user-select: none;
+            transition: background-color 0.2s ease;
+        }
+        .tabs-button:hover {
+            background-color: #2a2d33;
+        }
+        .tabs-button img {
+            width: 12px;
+            height: 12px;
+            filter: brightness(0) saturate(100%) invert(43%) sepia(6%) saturate(1059%) hue-rotate(202deg) brightness(95%) contrast(89%);
+            transition: filter 0.2s ease;
+        }
+        .tabs-button:hover img {
+            filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
+        }
+        .tabs-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 28px;
+            background-color: #151518;
+            border: 1px solid #2a2d33;
+            border-radius: 6px;
+            min-width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1100;
+            font-size: 12px;
+            color: #c0c0c0;
+        }
+        .tabs-dropdown-content.show {
+            display: block;
+        }
+        .tab-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #2a2d33;
+            user-select: none;
+        }
+        .tab-item:last-child {
+            border-bottom: none;
+        }
+        .tab-item:hover {
+            background-color: #2a2d33;
+        }
+        .tab-item.active {
+            background-color: #3a3d44;
+            font-weight: bold;
+        }
+        .tab-close-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 14px;
+            padding: 0;
+            margin-left: 8px;
+            user-select: none;
+        }
+        .tab-close-btn:hover {
+            color: #f44336;
+        }
+        .add-tab-btn {
+            display: block;
+            padding: 6px 10px;
+            cursor: pointer;
+            border-top: 1px solid #2a2d33;
+            text-align: center;
+            color: #6b6f7c;
+            user-select: none;
+        }
+        .add-tab-btn:hover {
+            background-color: #2a2d33;
+            color: #c0c0c0;
+            font-weight: bold;
+        }
         .content-area {
             height: calc(100vh - 40px);
             background-color: #0f0f11;
             padding: 0 8px 8px 8px;
             box-sizing: border-box;
         }
-
         .content-box {
             width: 100%;
             height: 100%;
@@ -106,14 +193,12 @@
             overflow: hidden;
             position: relative;
         }
-
         .webview-container {
             width: 100%;
             height: 100%;
             border-radius: 7px;
             overflow: hidden;
         }
-
         webview {
             width: 100%;
             height: 100%;
@@ -127,52 +212,170 @@
         <button id="forward-button"><img src="assets/forward.png" alt="Forward"></button>
         <button id="reload-button"><img src="assets/refresh.png" alt="Refresh"></button>
         <button id="settings-button"><img src="assets/settings.png" alt="Settings"></button>
-        <input type="text" class="url-bar">
+        <input type="text" class="url-bar" placeholder="Enter URL or search query">
+        <div class="tabs-dropdown">
+            <button class="tabs-button" id="tabs-button" title="Tabs">
+                <img src="assets/tabs.png" alt="Tabs">
+            </button>
+            <div class="tabs-dropdown-content" id="tabs-dropdown-content">
+                <div class="add-tab-btn" id="add-tab-btn">+ New Tab</div>
+            </div>
+        </div>
         <div class="titlebar-spacer"></div>
     </div>
     <div class="content-area">
         <div class="content-box">
-            <div class="webview-container">
+            <div class="webview-container" id="webview-container">
                 <webview id="webview" src="https://google.com/" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
             </div>
         </div>
     </div>
-
     <script>
-        function syncTitle() {
-            const titlebarText = document.getElementById('titlebar-text');
-            const documentTitle = document.title;
-            if (titlebarText) titlebarText.textContent = documentTitle;
-        }
-
-        window.addEventListener('DOMContentLoaded', syncTitle);
-
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList' && mutation.target.nodeName === 'TITLE') {
-                    syncTitle();
+        const tabsButton = document.getElementById('tabs-button');
+        const tabsDropdownContent = document.getElementById('tabs-dropdown-content');
+        const addTabBtn = document.getElementById('add-tab-btn');
+        const urlBar = document.querySelector('.url-bar');
+        const webviewContainer = document.getElementById('webview-container');
+        let tabs = [];
+        let currentTabId = null;
+        let tabIdCounter = 0;
+        function createWebview(url, tabId) {
+            const webview = document.createElement('webview');
+            webview.setAttribute('allowpopups', '');
+            webview.setAttribute('prefers-color-scheme', 'dark');
+            webview.setAttribute('webpreferences', 'contextIsolation=false,enableRemoteModule=true,contextMenu=true');
+            webview.style.width = '100%';
+            webview.style.height = '100%';
+            webview.style.border = 'none';
+            webview.dataset.tabId = tabId;
+            webview.src = url;
+            webview.addEventListener('did-navigate', (event) => {
+                if (tabId === currentTabId) {
+                    updateUrlBar(event.url);
+                }
+                updateTabUrl(tabId, event.url);
+                updateTabTitle(tabId, webview.getTitle());
+                renderTabs();
+            });
+            webview.addEventListener('did-navigate-in-page', (event) => {
+                if (tabId === currentTabId) {
+                    updateUrlBar(event.url);
+                }
+                updateTabUrl(tabId, event.url);
+                updateTabTitle(tabId, webview.getTitle());
+                renderTabs();
+            });
+            webview.addEventListener('page-title-updated', (event) => {
+                updateTabTitle(tabId, event.title);
+                renderTabs();
+            });
+            webview.addEventListener('dom-ready', () => {
+                if (tabId === currentTabId) {
+                    updateUrlBar(webview.src);
                 }
             });
-        });
-
-        const titleElement = document.querySelector('title');
-        if (titleElement) {
-            observer.observe(titleElement, { childList: true });
+            return webview;
         }
-
-        let lastTitle = document.title;
-        setInterval(() => {
-            if (document.title !== lastTitle) {
-                lastTitle = document.title;
-                syncTitle();
+        function addTab(url = 'https://google.com/') {
+            const id = ++tabIdCounter;
+            const title = 'New Tab';
+            const tab = { id, title, url };
+            tabs.push(tab);
+            clearWebview();
+            const webview = createWebview(url, id);
+            webviewContainer.appendChild(webview);
+            currentTabId = id;
+            updateUrlBar(url);
+            renderTabs();
+        }
+        function switchTab(id) {
+            if (id === currentTabId) return;
+            currentTabId = id;
+            clearWebview();
+            const tab = tabs.find(t => t.id === id);
+            if (!tab) return;
+            const webview = createWebview(tab.url, id);
+            webviewContainer.appendChild(webview);
+            updateUrlBar(tab.url);
+            renderTabs();
+        }
+        function closeTab(id) {
+            const index = tabs.findIndex(t => t.id === id);
+            if (index === -1) return;
+            tabs.splice(index, 1);
+            if (tabs.length === 0) {
+                addTab();
+                return;
             }
-        }, 100);
-
-        function isValidUrl(input) {
-            const urlPattern = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\/.*)?$/;
-            return urlPattern.test(input);
+            if (currentTabId === id) {
+                const nextTab = tabs[index] || tabs[index - 1];
+                if (nextTab) {
+                    switchTab(nextTab.id);
+                }
+            } else {
+                renderTabs();
+            }
         }
-
+        function clearWebview() {
+            while (webviewContainer.firstChild) {
+                webviewContainer.removeChild(webviewContainer.firstChild);
+            }
+        }
+        function updateTabUrl(id, url) {
+            const tab = tabs.find(t => t.id === id);
+            if (tab) {
+                tab.url = url;
+            }
+        }
+        function updateTabTitle(id, title) {
+            const tab = tabs.find(t => t.id === id);
+            if (tab && title) {
+                tab.title = title.length > 30 ? title.slice(0, 27) + '...' : title;
+            }
+        }
+        function renderTabs() {
+            const existingTabs = Array.from(tabsDropdownContent.querySelectorAll('.tab-item'));
+            existingTabs.forEach(node => node.remove());
+            tabs.forEach(tab => {
+                const tabItem = document.createElement('div');
+                tabItem.classList.add('tab-item');
+                if (tab.id === currentTabId) tabItem.classList.add('active');
+                tabItem.textContent = tab.title || tab.url;
+                tabItem.addEventListener('click', () => {
+                    switchTab(tab.id);
+                    toggleTabsDropdown(false);
+                });
+                const closeBtn = document.createElement('button');
+                closeBtn.classList.add('tab-close-btn');
+                closeBtn.textContent = '×';
+                closeBtn.title = 'Close Tab';
+                closeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeTab(tab.id);
+                });
+                tabItem.appendChild(closeBtn);
+                tabsDropdownContent.insertBefore(tabItem, addTabBtn);
+            });
+        }
+        function toggleTabsDropdown(show) {
+            if (typeof show === 'boolean') {
+                tabsDropdownContent.classList.toggle('show', show);
+            } else {
+                tabsDropdownContent.classList.toggle('show');
+            }
+        }
+        document.addEventListener('click', (event) => {
+            if (!tabsDropdownContent.contains(event.target) && !tabsButton.contains(event.target)) {
+                toggleTabsDropdown(false);
+            }
+        });
+        tabsButton.addEventListener('click', () => {
+            toggleTabsDropdown();
+        });
+        addTabBtn.addEventListener('click', () => {
+            addTab();
+            toggleTabsDropdown(false);
+        });
         function formatUrl(input) {
             input = input.trim();
             if (input.startsWith('http://') || input.startsWith('https://')) {
@@ -181,21 +384,19 @@
             if (input.startsWith('www.')) {
                 return 'https://' + input;
             }
-            if (isValidUrl(input)) {
+            const urlPattern = /^(?:[a-z0-9]+(?:-[a-z0-9]+)*\.)+[a-z]{2,}(\/.*)?$/i;
+            if (urlPattern.test(input)) {
                 return 'https://' + input;
             }
             return null;
         }
-
         function navigateToUrl(url) {
-            const webview = document.getElementById('webview');
-            const urlBar = document.querySelector('.url-bar');
-            webview.src = url;
-            urlBar.blur();
+            const currentWebview = webviewContainer.querySelector('webview');
+            if (!currentWebview) return;
+            currentWebview.src = url;
+            updateTabUrl(currentTabId, url);
         }
-
         function updateUrlBar(url) {
-            const urlBar = document.querySelector('.url-bar');
             try {
                 const urlObj = new URL(url);
                 let cleanUrl = urlObj.hostname + urlObj.pathname;
@@ -208,62 +409,50 @@
                 urlBar.value = url;
             }
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const webview = document.getElementById('webview');
-            const urlBar = document.querySelector('.url-bar');
-            const backButton = document.getElementById('back-button');
-            const forwardButton = document.getElementById('forward-button');
-            const reloadButton = document.getElementById('reload-button');
-            const settingsButton = document.getElementById('settings-button');
-
-            webview.addEventListener('dom-ready', () => {
-                updateUrlBar(webview.src);
-            });
-
-            webview.addEventListener('did-navigate', (event) => {
-                updateUrlBar(event.url);
-            });
-
-            webview.addEventListener('did-navigate-in-page', (event) => {
-                updateUrlBar(event.url);
-            });
-
-            urlBar.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    const input = urlBar.value.trim();
-                    if (input) {
-                        const url = formatUrl(input);
-                        if (url) {
-                            navigateToUrl(url);
-                        } else {
-                            const searchQuery = encodeURIComponent(input);
-                            const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
-                            navigateToUrl(searchUrl);
-                        }
-                    }
+        urlBar.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const input = urlBar.value.trim();
+                if (!input) return;
+                const url = formatUrl(input);
+                if (url) {
+                    navigateToUrl(url);
+                } else {
+                    const searchQuery = encodeURIComponent(input);
+                    const searchUrl = `https://www.google.com/search?q=${searchQuery}`;
+                    navigateToUrl(searchUrl);
                 }
-            });
-
-            backButton.addEventListener('click', () => {
-                if (webview.canGoBack()) {
-                    webview.goBack();
-                }
-            });
-
-            forwardButton.addEventListener('click', () => {
-                if (webview.canGoForward()) {
-                    webview.goForward();
-                }
-            });
-
-            reloadButton.addEventListener('click', () => {
+            }
+        });
+        const backButton = document.getElementById('back-button');
+        const forwardButton = document.getElementById('forward-button');
+        const reloadButton = document.getElementById('reload-button');
+        const settingsButton = document.getElementById('settings-button');
+        function getCurrentWebview() {
+            return webviewContainer.querySelector('webview');
+        }
+        backButton.addEventListener('click', () => {
+            const webview = getCurrentWebview();
+            if (webview && webview.canGoBack()) {
+                webview.goBack();
+            }
+        });
+        forwardButton.addEventListener('click', () => {
+            const webview = getCurrentWebview();
+            if (webview && webview.canGoForward()) {
+                webview.goForward();
+            }
+        });
+        reloadButton.addEventListener('click', () => {
+            const webview = getCurrentWebview();
+            if (webview) {
                 webview.reload();
-            });
-
-            settingsButton.addEventListener('click', () => {
-                window.location.href = 'pages/settings.html';
-            });
+            }
+        });
+        settingsButton.addEventListener('click', () => {
+            window.location.href = 'pages/settings.html';
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            addTab('https://google.com/');
         });
     </script>
 </body>
