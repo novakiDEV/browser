@@ -19,7 +19,7 @@ function createWindow(): void {
   });
 
   // Load the frontend HTML file
-  mainWindow.loadFile(path.join(__dirname, '../frontend/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
 
   // Remove menu bar completely
   mainWindow.setMenuBarVisibility(false);

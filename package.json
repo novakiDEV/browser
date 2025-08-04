@@ -2,13 +2,13 @@
   "name": "cnvrs-browser",
   "version": "1.0.0",
   "description": "cool browser",
-  "main": "dist/src/main.js",
+  "main": "dist/main/main.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "npm run build && electron .",
     "electron": "electron .",
-    "dev-electron": "tsc && electron .",
+    "dev-electron": "npm run build && electron .",
     "clean": "rimraf dist"
   },
   "keywords": [],
