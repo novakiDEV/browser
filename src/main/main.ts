@@ -14,9 +14,14 @@ function createWindow(): void {
     backgroundColor: '#000000', // Black background
     icon: undefined, // You can add an icon path here later
     show: false, // Don't show until ready
-    titleBarStyle: 'default',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      color: '#000000',
+      symbolColor: '#ffffff',
+      height: 30
+    },
     autoHideMenuBar: true, // Hide menu bar
-    frame: true // Keep window frame but no menu
+    frame: false // Remove window frame
   });
 
   // Load the frontend HTML file
