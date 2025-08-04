@@ -8,6 +8,9 @@ function createWindow(): void {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      webSecurity: false,
+      allowRunningInsecureContent: true,
+      webviewTag: true,
       preload: path.join(__dirname, 'preload.js')
     },
     backgroundColor: '#1a1a1a',
@@ -16,6 +19,13 @@ function createWindow(): void {
     titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     frame: false
+  });
+
+  mainWindow.webContents.session.setUserAgent(mainWindow.webContents.session.getUserAgent() + ' prefers-color-scheme: dark');
+  
+  mainWindow.webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+    details.requestHeaders['Sec-CH-Prefers-Color-Scheme'] = 'dark';
+    callback({ requestHeaders: details.requestHeaders });
   });
 
   mainWindow.loadFile(path.join(__dirname, '../../src/renderer/index.html'));
