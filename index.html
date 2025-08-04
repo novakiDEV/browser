@@ -185,9 +185,22 @@
             background-color: #0f0f11;
             padding: 0 8px 8px 8px;
             box-sizing: border-box;
+            display: flex;
+            gap: 8px;
+        }
+        .sidebar {
+            width: 0;
+            height: 100%;
+            overflow: hidden;
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+            display: none;
+        }
+        .sidebar.open {
+            width: 250px;
         }
         .content-box {
-            width: 100%;
+            flex: 1;
             height: 100%;
             background-color: #151518;
             border-radius: 8px;
@@ -230,6 +243,8 @@
         <div class="titlebar-spacer"></div>
     </div>
     <div class="content-area">
+        <div class="sidebar" id="sidebar">
+        </div>
         <div class="content-box">
             <div class="webview-container" id="webview-container">
                 <webview id="webview" src="https://google.com/" allowpopups prefers-color-scheme="dark" webpreferences="contextIsolation=false,enableRemoteModule=true,contextMenu=true"></webview>
