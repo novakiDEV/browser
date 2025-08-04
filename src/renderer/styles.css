@@ -8,14 +8,25 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #0f0f0f;
-    padding: 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.titlebar {
+    width: 100%;
+    height: 32px;
+    background-color: #0f0f0f;
+    border: none;
+    -webkit-app-region: drag;
 }
 
 .container {
     display: flex;
     width: 100%;
-    height: 100%;
+    flex: 1;
     gap: 8px;
+    padding: 0 8px 8px 8px;
 }
 
 .sidebar {

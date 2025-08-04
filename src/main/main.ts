@@ -17,6 +17,11 @@ function createWindow(): void {
     icon: undefined,
     show: false,
     titleBarStyle: 'hidden',
+    titleBarOverlay: {
+      height: 32,
+      color: '#0f0f0f',
+      symbolColor: '#ffffff'
+    },
     autoHideMenuBar: true,
     frame: false
   });
