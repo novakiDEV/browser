@@ -61,13 +61,31 @@
         .custom-titlebar button:hover img, .tabs-button:hover img {
             filter: brightness(0) saturate(100%) invert(76%) sepia(4%) saturate(424%) hue-rotate(202deg) brightness(94%) contrast(85%);
         }
-        .url-bar {
+        .url-container {
             flex: 1;
-            height: 24px;
+            display: flex;
+            align-items: center;
             background-color: #1e1e21;
             border: 1px solid #2a2d33;
             border-radius: 12px;
             padding: 0 16px;
+            height: 24px;
+            box-sizing: border-box;
+            position: relative;
+            justify-content: center;
+        }
+        .favicon {
+            width: 12px;
+            height: 12px;
+            opacity: 0.8;
+            position: absolute;
+            pointer-events: none;
+        }
+        .url-bar {
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            border: none;
             font-size: 12px;
             color: #6b6f7c;
             outline: none;
@@ -76,6 +94,7 @@
             opacity: 0.9;
             transition: color 0.2s ease;
             text-align: center;
+            padding-left: 22px;
         }
         .url-bar:focus {
             color: #c0c0c0;
@@ -196,7 +215,10 @@
         <button id="forward-button"><img src="assets/forward.png" alt="Forward"></button>
         <button id="reload-button"><img src="assets/refresh.png" alt="Refresh"></button>
         <button id="settings-button"><img src="assets/settings.png" alt="Settings"></button>
-        <input type="text" class="url-bar" placeholder="Enter URL or search query">
+        <div class="url-container">
+            <input type="text" class="url-bar" placeholder="Enter URL or search query">
+            <img class="favicon" id="favicon" src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b6f7c'><circle cx='12' cy='12' r='10'/></svg>" alt="Favicon">
+        </div>
         <div class="tabs-dropdown">
             <button class="tabs-button" id="tabs-button" title="Tabs">
                 <img src="assets/tabs.png" alt="Tabs">
@@ -219,6 +241,7 @@
         const tabsDropdownContent = document.getElementById('tabs-dropdown-content');
         const addTabBtn = document.getElementById('add-tab-btn');
         const urlBar = document.querySelector('.url-bar');
+        const faviconImg = document.getElementById('favicon');
         const webviewContainer = document.getElementById('webview-container');
         let tabs = [];
         let currentTabId = null;
@@ -238,10 +261,12 @@
             webview.dataset.tabId = tabId;
             webview.src = url;
 
-            // Combined navigation events
             ['did-navigate', 'did-navigate-in-page'].forEach(event => {
                 webview.addEventListener(event, (e) => {
-                    if (tabId === currentTabId) updateUrlBar(e.url);
+                    if (tabId === currentTabId) {
+                        updateUrlBar(e.url);
+                        updateFavicon(e.url);
+                    }
                     updateTab(tabId, 'url', e.url);
                     updateTab(tabId, 'title', webview.getTitle());
                     renderTabs();
@@ -254,7 +279,10 @@
             });
 
             webview.addEventListener('dom-ready', () => {
-                if (tabId === currentTabId) updateUrlBar(webview.src);
+                if (tabId === currentTabId) {
+                    updateUrlBar(webview.src);
+                    updateFavicon(webview.src);
+                }
             });
 
             webview.addEventListener('did-fail-load', (event) => {
@@ -286,6 +314,7 @@
             const webview = createWebview(tab.url, id);
             webviewContainer.appendChild(webview);
             updateUrlBar(tab.url);
+            updateFavicon(tab.url);
             renderTabs();
         }
         function closeTab(id) {
@@ -400,12 +429,58 @@
                 
                 urlBar.value = displayUrl;
                 urlBar.dataset.fullUrl = url;
+                positionFavicon();
             } catch (e) {
                 urlBar.value = url;
                 urlBar.dataset.fullUrl = url;
+                positionFavicon();
             }
         }
-        // URL bar event handlers
+        
+        function positionFavicon() {
+            if (urlBar.value.trim() === '') {
+                faviconImg.style.display = 'none';
+                return;
+            }
+            
+            const measureSpan = document.createElement('span');
+            measureSpan.style.position = 'absolute';
+            measureSpan.style.visibility = 'hidden';
+            measureSpan.style.fontSize = '12px';
+            measureSpan.style.fontFamily = window.getComputedStyle(urlBar).fontFamily;
+            measureSpan.style.fontWeight = '400';
+            measureSpan.textContent = urlBar.value;
+            document.body.appendChild(measureSpan);
+            
+            const textWidth = measureSpan.offsetWidth;
+            document.body.removeChild(measureSpan);
+            
+            faviconImg.style.display = 'block';
+            const containerWidth = urlBar.offsetWidth;
+            const textStartPosition = (containerWidth / 2) - (textWidth / 2);
+            faviconImg.style.left = textStartPosition + 'px';
+        }
+        
+        function updateFavicon(url) {
+            try {
+                const urlObj = new URL(url);
+                const faviconUrl = `${urlObj.protocol}//${urlObj.hostname}/favicon.ico`;
+                
+                const testImg = new Image();
+                testImg.onload = () => {
+                    faviconImg.src = faviconUrl;
+                    positionFavicon();
+                };
+                testImg.onerror = () => {
+                    faviconImg.src = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b6f7c'><circle cx='12' cy='12' r='10'/></svg>";
+                    positionFavicon();
+                };
+                testImg.src = faviconUrl;
+            } catch (e) {
+                faviconImg.src = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b6f7c'><circle cx='12' cy='12' r='10'/></svg>";
+                positionFavicon();
+            }
+        }
         urlBar.addEventListener('focus', () => {
             if (urlBar.dataset.fullUrl) updateUrlBar(urlBar.dataset.fullUrl, true);
         });
@@ -413,6 +488,10 @@
         urlBar.addEventListener('blur', () => {
             if (urlBar.dataset.fullUrl) updateUrlBar(urlBar.dataset.fullUrl, false);
         });
+
+        urlBar.addEventListener('input', positionFavicon);
+
+        window.addEventListener('resize', positionFavicon);
 
         urlBar.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -426,7 +505,6 @@
             }
         });
 
-        // Navigation button handlers
         ['back', 'forward', 'reload'].forEach(action => {
             document.getElementById(`${action}-button`).addEventListener('click', () => {
                 const webview = getCurrentWebview();
@@ -437,7 +515,6 @@
                 else if (action === 'reload') webview.reload();
             });
         });
-        // Settings and utility functions
         function getCurrentWebview() {
             return webviewContainer.querySelector('webview');
         }
