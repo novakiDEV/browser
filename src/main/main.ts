@@ -11,6 +11,7 @@ function createWindow(): void {
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
+    backgroundColor: '#000000', // Black background
     icon: undefined, // You can add an icon path here later
     show: false, // Don't show until ready
     titleBarStyle: 'default',
@@ -19,7 +20,7 @@ function createWindow(): void {
   });
 
   // Load the frontend HTML file
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  mainWindow.loadFile(path.join(__dirname, '../../src/renderer/index.html'));
 
   // Remove menu bar completely
   mainWindow.setMenuBarVisibility(false);
