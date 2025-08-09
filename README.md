@@ -1,4 +1,4 @@
-# cnvrs-browser
+# cnvrs-browser macos
 
 best browser of all time
 
