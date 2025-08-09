@@ -68,3 +68,49 @@ document.addEventListener('auxclick', (e) => {
     sendOpenUrl(abs);
   } catch {}
 }, true);
+
+function collectFavicons() {
+  try {
+    const links = Array.from(document.querySelectorAll('link[rel]'));
+    const icons = [];
+    const pushIcon = (href, rel, sizes, type) => {
+      if (!href) return;
+      try {
+        const abs = new URL(href, location.href).href;
+        let sizeNum = null;
+        if (sizes && typeof sizes === 'string') {
+          const s = sizes.trim().split(/\s+/)[0];
+          const m = s.match(/(\d+)x(\d+)/i);
+          if (m) sizeNum = Math.max(parseInt(m[1],10), parseInt(m[2],10));
+        }
+        icons.push({ url: abs, rel: String(rel || ''), sizes: String(sizes || ''), size: sizeNum, type: String(type || '') });
+      } catch {}
+    };
+    links.forEach(l => {
+      const rel = (l.getAttribute('rel') || '').toLowerCase();
+      if (/(^|\s)(icon|shortcut icon|apple-touch-icon|apple-touch-icon-precomposed|mask-icon)(\s|$)/.test(rel)) {
+        pushIcon(l.getAttribute('href') || l.href, rel, l.getAttribute('sizes') || '', l.getAttribute('type') || '');
+      }
+    });
+    const og = document.querySelector('meta[property="og:image"], meta[name="og:image"]');
+    if (og && og.getAttribute('content')) pushIcon(og.getAttribute('content'), 'og:image', '', '');
+    ipcRenderer.sendToHost('favicons', { icons });
+  } catch {}
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  collectFavicons();
+  try {
+    const mo = new MutationObserver((mut) => {
+      for (const m of mut) {
+        if (m.type === 'childList') {
+          const addedLinks = Array.from(m.addedNodes || []).some(n => n.tagName && n.tagName.toLowerCase() === 'link');
+          if (addedLinks) { collectFavicons(); return; }
+        } else if (m.type === 'attributes') {
+          if (m.target && m.target.tagName && m.target.tagName.toLowerCase() === 'link') { collectFavicons(); return; }
+        }
+      }
+    });
+    mo.observe(document.head || document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['rel','href','sizes','type'] });
+  } catch {}
+});

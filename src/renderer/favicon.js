@@ -21,19 +21,50 @@ export function initFavicon(searchIconEl) {
     }
   }
 
-  const loadFavicon = (domain) => {
-    const faviconUrl = `https://${domain}/favicon.ico`
-    const testImg = new Image()
-    testImg.onload = () => {
-      showFavicon(faviconUrl)
-      state.currentFaviconUrl = faviconUrl
-    }
-    testImg.onerror = () => {
-      showGlobeIcon()
-      state.currentFaviconUrl = null
-    }
-    testImg.src = faviconUrl
+  const tryLoad = (url, onSuccess, onFail) => {
+    const img = new Image()
+  img.onload = () => onSuccess(url)
+    img.onerror = onFail
+    img.referrerPolicy = 'no-referrer'
+    img.src = url
   }
 
-  return { showSearchIcon, showFavicon, showGlobeIcon, cleanUrl, updateUrlDisplay, loadFavicon }
+  const loadFavicon = (domain) => {
+    const ico = `https://${domain}/favicon.ico`
+    tryLoad(ico, (okUrl) => {
+      showFavicon(okUrl)
+      state.currentFaviconUrl = okUrl
+  window.__haveFaviconOnce = true
+    }, () => {
+      if (!state.currentFaviconUrl) {
+        showGlobeIcon()
+        state.currentFaviconUrl = null
+      }
+    })
+  }
+
+  const pickBestIcon = (icons = []) => {
+    const scored = icons.map(i => ({
+      url: i.url,
+      size: Number.isFinite(i.size) ? i.size : (/apple-touch-icon/i.test(i.rel) ? 180 : (/svg/i.test(i.type) ? 512 : 0)),
+      rel: i.rel || ''
+    }))
+    scored.sort((a, b) => (b.size || 0) - (a.size || 0))
+    return scored[0]?.url
+  }
+
+  const loadFromCandidates = (domain, icons) => {
+  const best = pickBestIcon(icons)
+    if (best) {
+      tryLoad(best, (ok) => {
+        showFavicon(ok)
+        state.currentFaviconUrl = ok
+    window.__haveFaviconOnce = true
+      }, () => loadFavicon(domain))
+    } else {
+      loadFavicon(domain)
+    }
+  }
+
+  return { showSearchIcon, showFavicon, showGlobeIcon, cleanUrl, updateUrlDisplay, loadFavicon, loadFromCandidates }
 }

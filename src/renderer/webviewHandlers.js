@@ -1,4 +1,4 @@
-export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu, onNavigated) {
+export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu, onNavigated, onFavicons) {
   if (!webview) return
   webview.addEventListener('new-window', (e) => {
     if (e?.url) webview.src = e.url
@@ -13,6 +13,8 @@ export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu,
     } else if (e.channel === 'open-url' && e.args && e.args[0]?.url) {
       const next = e.args[0].url
       if (next) webview.src = next
+    } else if (e.channel === 'favicons' && e.args && e.args[0]?.icons) {
+      onFavicons?.(e.args[0].icons)
     }
   })
   ;['will-navigate', 'did-navigate', 'did-start-loading', 'did-stop-loading']

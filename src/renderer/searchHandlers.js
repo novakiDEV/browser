@@ -21,7 +21,7 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
     }
   })
 
-  searchInput.addEventListener('keypress', (e) => {
+  const handleEnter = (e) => {
     if (e.key === 'Enter') {
       const query = searchInput.value.trim()
       if (query && webview) {
@@ -31,5 +31,7 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
         webview.src = url
       }
     }
-  })
+  }
+  searchInput.addEventListener('keypress', handleEnter)
+  searchInput.addEventListener('keydown', handleEnter)
 }

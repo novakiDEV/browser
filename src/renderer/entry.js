@@ -45,6 +45,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const domain = fav.cleanUrl(url)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)
       fav.loadFavicon(domain)
+    },
+    (icons) => {
+      try {
+        const currentUrl = webview?.getURL?.()
+        if (!currentUrl) return
+        const domain = fav.cleanUrl(currentUrl)
+        fav.loadFromCandidates(domain, icons)
+      } catch {}
     }
   )
 
@@ -53,7 +61,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentUrl && currentUrl !== 'about:blank') {
       const domain = fav.cleanUrl(currentUrl)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)
-      fav.loadFavicon(domain)
+      if (!window.__haveFaviconOnce) {
+        fav.loadFavicon(domain)
+      }
     }
   }, 1000)
 
