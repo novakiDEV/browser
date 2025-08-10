@@ -104,6 +104,7 @@ body.mica-enabled { background: transparent; }
 	z-index: 2;
 }
 .corner-button.right { right: 0; left: auto; }
+
 .bottombar {
 	width: 100%;
 	height: var(--control-height);
@@ -120,6 +121,11 @@ body.mica-enabled { background: transparent; }
 	align-items: center;
 	gap: 6px;
 		position: relative;
+	pointer-events: none;
+}
+
+.corner-button {
+	pointer-events: auto;
 }
 
 	.status-center {

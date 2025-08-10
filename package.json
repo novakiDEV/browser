@@ -1,6 +1,6 @@
 {
   "name": "cnvrs-browser",
-  "version": "0.13.0",
+  "version": "0.1.0",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
