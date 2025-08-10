@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentUrl && currentUrl !== 'about:blank') {
       const domain = fav.cleanUrl(currentUrl)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)
-      if (!window.__haveFaviconOnce) {
+      if (!window.__haveFaviconOnce) { 
         fav.loadFavicon(domain)
       }
     }
