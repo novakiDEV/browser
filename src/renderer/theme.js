@@ -1,6 +1,12 @@
 export async function applyTheme(searchInput) {
   try {
     const theme = await window.themeAPI.get();
+    const mica = !!theme?.mica;
+    if (mica) {
+      document.body.classList.add('mica-enabled');
+    } else {
+      document.body.classList.remove('mica-enabled');
+    }
     if (!theme?.background) return;
     const hex = theme.background.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
@@ -10,7 +16,10 @@ export async function applyTheme(searchInput) {
     const lightG = Math.min(255, g + 60);
     const lightB = Math.min(255, b + 60);
 
-    document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+    // Keep body transparent if Mica is enabled; otherwise color the background
+    if (!mica) {
+      document.body.style.background = `rgb(${r}, ${g}, ${b})`;
+    }
     document.documentElement.style.setProperty('--content-bg', `rgba(${r}, ${g}, ${b}, 0.20)`);
   const track = `rgba(${r}, ${g}, ${b}, 0.18)`;
   const thumb = `rgba(${r}, ${g}, ${b}, 0.50)`;
@@ -24,11 +33,7 @@ export async function applyTheme(searchInput) {
       searchInput.style.borderColor = `rgba(${lightR}, ${lightG}, ${lightB}, 0.6)`;
     }
 
-    const bottomBar = document.querySelector('.bottombar');
-    if (bottomBar) {
-      bottomBar.style.background = `rgba(${r}, ${g}, ${b}, 0.3)`;
-      bottomBar.style.borderColor = `rgba(${lightR}, ${lightG}, ${lightB}, 0.6)`;
-    }
+  // Keep bottom bar transparent; do not override with theme background
 
     const ctxMenu = document.getElementById('context-menu');
     if (ctxMenu) {

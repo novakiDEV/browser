@@ -1,4 +1,12 @@
 const { app, BrowserWindow, Menu, ipcMain, shell, dialog } = require('electron');
+let MicaBrowserWindow;
+try {
+  // Only available on Windows; wrapped in try in case native module isn't present
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  ({ MicaBrowserWindow } = require('mica-electron'));
+} catch (_) {
+  MicaBrowserWindow = null;
+}
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -17,6 +25,7 @@ function readTheme() {
 const isDev = !!process.env.VITE_DEV_SERVER_URL;
 
 let mainWindow;
+let micaEnabled = false;
 const acceptedInsecureHosts = new Set();
 
 function createWindow() {
@@ -24,7 +33,9 @@ function createWindow() {
   if (process.platform === 'win32') {
     try { app.setAppUserModelId('cnvrs-browser'); } catch {}
   }
-  mainWindow = new BrowserWindow({
+  // Use Mica-enabled window on Windows if available; fall back otherwise
+  const WinClass = process.platform === 'win32' && MicaBrowserWindow ? MicaBrowserWindow : BrowserWindow;
+  const windowOpts = {
     width: 1200,
     height: 800,
     show: false,
@@ -39,12 +50,28 @@ function createWindow() {
       sandbox: false,
       webSecurity: false
     }
-  });
+  };
+  if (WinClass !== BrowserWindow) {
+    // Let the system effect show through any transparent regions
+    windowOpts.backgroundColor = '#00000000';
+  }
+  mainWindow = new WinClass(windowOpts);
+
+  // Apply Mica effect (Windows 11/10) if supported
+  if (WinClass !== BrowserWindow && typeof mainWindow.setMicaEffect === 'function') {
+    try {
+      if (typeof mainWindow.setDarkTheme === 'function') mainWindow.setDarkTheme();
+      mainWindow.setMicaEffect();
+      micaEnabled = true;
+    } catch (_) {
+      micaEnabled = false;
+    }
+  }
 
   Menu.setApplicationMenu(null);
   mainWindow.setMenuBarVisibility(false);
 
-  ipcMain.handle('get-theme', () => readTheme());
+  ipcMain.handle('get-theme', () => ({ ...readTheme(), mica: micaEnabled }));
   ipcMain.handle('open-external', async (_event, url) => {
     if (url && typeof url === 'string') {
       try { await shell.openExternal(url); } catch (e) { /* noop */ }

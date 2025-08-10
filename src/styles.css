@@ -11,6 +11,8 @@ html, body { overflow: hidden; }
 	--scrollbar-thumb-hover: rgba(255,255,255,0.55);
 }
 body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #000000; color: #ffffff; }
+/* When Mica is enabled, make the window background transparent so the OS effect shows through. */
+body.mica-enabled { background: transparent; }
 .titlebar { display: none; }
 .app-shell {
 	position: relative;
@@ -106,7 +108,7 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; back
 	width: 100%;
 	height: var(--control-height);
 	padding: 8px 12px;
-	background: rgba(255, 255, 255, 0.1);
+	background: transparent;
 	border: none;
 	border-radius: 8px;
 	color: white;
