@@ -12,6 +12,12 @@ export async function applyTheme(searchInput) {
 
     document.body.style.background = `rgb(${r}, ${g}, ${b})`;
     document.documentElement.style.setProperty('--content-bg', `rgba(${r}, ${g}, ${b}, 0.20)`);
+  const track = `rgba(${r}, ${g}, ${b}, 0.18)`;
+  const thumb = `rgba(${r}, ${g}, ${b}, 0.50)`;
+  const thumbHover = `rgba(${r}, ${g}, ${b}, 0.65)`;
+  document.documentElement.style.setProperty('--scrollbar-track', track);
+  document.documentElement.style.setProperty('--scrollbar-thumb', thumb);
+  document.documentElement.style.setProperty('--scrollbar-thumb-hover', thumbHover);
 
     if (searchInput) {
       searchInput.style.background = `rgba(${r}, ${g}, ${b}, 0.3)`;

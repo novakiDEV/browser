@@ -5,6 +5,10 @@ html, body { overflow: hidden; }
 	--win-radius: 8px;
 	--content-bg: #0a0a0a;
 	--control-height: 34px;
+	--scrollbar-size: 10px;
+	--scrollbar-track: rgba(255,255,255,0.08);
+	--scrollbar-thumb: rgba(255,255,255,0.35);
+	--scrollbar-thumb-hover: rgba(255,255,255,0.55);
 }
 body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #000000; color: #ffffff; }
 .titlebar { display: none; }
@@ -239,5 +243,24 @@ body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; back
 }
 .context-menu .menu-icon { width: 14px; height: 14px; fill: rgba(255,255,255,0.8); }
 .context-menu .menu-icon.flip-x { transform: scaleX(-1); }
+
+/* Themed scrollbars for the host UI */
+*::-webkit-scrollbar {
+	width: var(--scrollbar-size);
+	height: var(--scrollbar-size);
+}
+*::-webkit-scrollbar-track {
+	background: var(--scrollbar-track);
+	border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb {
+	background: var(--scrollbar-thumb);
+	border-radius: 8px;
+	border: 2px solid transparent;
+	background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+	background: var(--scrollbar-thumb-hover);
+}
 
 

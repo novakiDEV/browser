@@ -23,4 +23,16 @@ export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu,
   webview.addEventListener('did-navigate', (e) => {
     onNavigated?.(e.url)
   })
+
+  webview.addEventListener('dom-ready', () => {
+    try {
+      const css = `
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.35); border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.55); }
+      `
+      webview.insertCSS(css)
+    } catch {}
+  })
 }
