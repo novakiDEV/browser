@@ -69,6 +69,32 @@ document.addEventListener('auxclick', (e) => {
   } catch {}
 }, true);
 
+// Hover link status
+let hoverTimer = null;
+const sendHover = (href) => {
+  try { ipcRenderer.sendToHost('hover-link', { href: href || null }); } catch {}
+};
+document.addEventListener('mouseover', (e) => {
+  const a = e.target && (e.target.closest ? e.target.closest('a[href]') : null);
+  clearTimeout(hoverTimer);
+  if (a) {
+    hoverTimer = setTimeout(() => {
+      try { const abs = new URL(a.getAttribute('href'), location.href).href; sendHover(abs); } catch { sendHover(a.getAttribute('href')); }
+    }, 60);
+  } else {
+    hoverTimer = setTimeout(() => sendHover(null), 60);
+  }
+}, true);
+document.addEventListener('mouseout', (e) => {
+  const rel = e.relatedTarget;
+  if (!rel || !e.currentTarget?.contains?.(rel)) sendHover(null);
+}, true);
+
+// Basic progress hints
+try {
+  window.addEventListener('beforeunload', () => { ipcRenderer.sendToHost('load-progress', { type: 'start' }); });
+} catch {}
+
 function collectFavicons() {
   try {
     const links = Array.from(document.querySelectorAll('link[rel]'));

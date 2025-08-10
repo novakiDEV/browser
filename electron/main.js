@@ -17,6 +17,7 @@ function readTheme() {
 const isDev = !!process.env.VITE_DEV_SERVER_URL;
 
 let mainWindow;
+const acceptedInsecureHosts = new Set();
 
 function createWindow() {
   const theme = readTheme();
@@ -125,6 +126,41 @@ function createWindow() {
 }
 
 app.whenReady().then(createWindow);
+
+// Allow proceeding on specific certificate errors (dev-only prompt). Unsafe if misused.
+app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {
+  try {
+    const host = new URL(url).host;
+    if (acceptedInsecureHosts.has(host)) {
+      event.preventDefault();
+      return callback(true);
+    }
+    if (isDev) {
+      event.preventDefault();
+      // Ask once per host
+      dialog.showMessageBox(mainWindow || BrowserWindow.getFocusedWindow(), {
+        type: 'warning',
+        buttons: ['Continue (unsafe)', 'Cancel'],
+        defaultId: 1,
+        cancelId: 1,
+        title: 'Certificate error',
+        message: `The certificate for ${host} is invalid: ${error}.`,
+        detail: 'Only continue if you trust this site. This exception applies for this session only.'
+      }).then(res => {
+        if (res.response === 0) {
+          acceptedInsecureHosts.add(host);
+          callback(true);
+        } else {
+          callback(false);
+        }
+      }).catch(() => callback(false));
+    } else {
+      callback(false);
+    }
+  } catch {
+    callback(false);
+  }
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();

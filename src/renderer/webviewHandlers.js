@@ -1,5 +1,9 @@
 export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu, onNavigated, onFavicons) {
   if (!webview) return
+  const statusEl = document.getElementById('status-center')
+  const loadbar = document.getElementById('loadbar')
+  const setProgress = (p) => { if (loadbar) loadbar.style.setProperty('--loadbar-progress', `${Math.max(0, Math.min(100, p))}%`) }
+  const setStatus = (text) => { if (statusEl) { statusEl.textContent = text || ''; statusEl.style.opacity = text ? '1' : '0'; } }
   webview.addEventListener('new-window', (e) => {
     if (e?.url) webview.src = e.url
   })
@@ -15,6 +19,11 @@ export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu,
       if (next) webview.src = next
     } else if (e.channel === 'favicons' && e.args && e.args[0]?.icons) {
       onFavicons?.(e.args[0].icons)
+    } else if (e.channel === 'hover-link') {
+      const href = e.args && e.args[0] ? e.args[0].href : null
+      setStatus(href || '')
+    } else if (e.channel === 'load-progress') {
+      setProgress(10)
     }
   })
   ;['will-navigate', 'did-navigate', 'did-start-loading', 'did-stop-loading']
@@ -35,4 +44,7 @@ export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu,
       webview.insertCSS(css)
     } catch {}
   })
+
+  webview.addEventListener('did-start-loading', () => { setProgress(15); setStatus('') })
+  webview.addEventListener('did-stop-loading', () => { setProgress(100); setTimeout(() => setProgress(0), 500) })
 }
