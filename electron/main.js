@@ -58,10 +58,10 @@ function createWindow() {
   mainWindow = new WinClass(windowOpts);
 
   // Apply Mica effect (Windows 11/10) if supported
-  if (WinClass !== BrowserWindow && typeof mainWindow.setMicaEffect === 'function') {
+  if (WinClass !== BrowserWindow && typeof mainWindow.setMicaAcrylicEffect === 'function') {
     try {
       if (typeof mainWindow.setDarkTheme === 'function') mainWindow.setDarkTheme();
-      mainWindow.setMicaEffect();
+      mainWindow.setMicaAcrylicEffect();
       micaEnabled = true;
     } catch (_) {
       micaEnabled = false;
@@ -152,7 +152,11 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(createWindow);
+const { registerProtocols } = require('./protocols.js');
+app.whenReady().then(() => {
+  registerProtocols();
+  createWindow();
+});
 
 // Allow proceeding on specific certificate errors (dev-only prompt). Unsafe if misused.
 app.on('certificate-error', (event, webContents, url, error, certificate, callback) => {

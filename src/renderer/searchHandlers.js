@@ -25,9 +25,9 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
     if (e.key === 'Enter') {
       const query = searchInput.value.trim()
       if (query && webview) {
-        // Allow direct navigation for any protocol if '://' is present
+        // Allow direct navigation for any protocol (e.g., about:, mailto:, file:, custom:, or anything with ://)
         let url;
-        if (query.includes('://')) {
+        if (/^[a-zA-Z0-9+.-]+:/.test(query)) {
           url = query;
         } else if (query.includes('.') && !query.includes(' ')) {
           url = `https://${query}`;

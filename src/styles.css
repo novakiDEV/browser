@@ -186,7 +186,7 @@ body.mica-enabled { background: transparent; }
 	height: var(--control-height);
 	padding: 8px 12px 8px 37px;
 	background: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.2);
+	border: none;
 	border-radius: 8px;
 	color: white;
 	font-size: 14px;
@@ -224,8 +224,8 @@ body.mica-enabled { background: transparent; }
 
 .search-input:focus {
 	background: rgba(255, 255, 255, 0.15);
-	border-color: rgba(255, 255, 255, 0.3);
-	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+	border: none;
+	box-shadow: none;
 }
 
 #contentview.contentview {
@@ -233,7 +233,8 @@ body.mica-enabled { background: transparent; }
 	min-width: 0;
 	border-radius: var(--win-radius);
 	background: var(--content-bg);
-	outline: 1px solid rgba(255, 255, 255, 0.08);
+	border: none;
+	outline: none;
 	overflow: hidden;
 	position: relative;
 }
