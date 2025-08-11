@@ -25,10 +25,16 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
     if (e.key === 'Enter') {
       const query = searchInput.value.trim()
       if (query && webview) {
-        const url = query.includes('.') && !query.includes(' ')
-          ? (query.startsWith('http') ? query : `https://${query}`)
-          : `https://www.google.com/search?q=${encodeURIComponent(query)}`
-        webview.src = url
+        // Allow direct navigation for any protocol if '://' is present
+        let url;
+        if (query.includes('://')) {
+          url = query;
+        } else if (query.includes('.') && !query.includes(' ')) {
+          url = `https://${query}`;
+        } else {
+          url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        }
+        webview.src = url;
       }
     }
   }
