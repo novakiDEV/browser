@@ -1,3 +1,24 @@
+/* Static box above search bar */
+.staticbox-container {
+	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+}
+.staticbox {
+	width: 100%;
+	height: var(--control-height);
+	padding: 8px 12px 8px 37px;
+	background: rgba(255, 255, 255, 0.1);
+	border-radius: 8px;
+	color: white;
+	font-size: 14px;
+	font-family: inherit;
+	box-sizing: border-box;
+	user-select: none;
+	pointer-events: none;
+	display: flex;
+	align-items: center;
+}
 html, body, #root { height: 100%; margin: 0; -webkit-app-region: no-drag; }
 html, body { overflow: hidden; }
 :root {
@@ -33,25 +54,27 @@ body.mica-enabled { background: transparent; }
 	flex-direction: column;
 	min-height: 0;
 }
-.info-container {
-	position: relative;
+.topbar-container {
 	display: flex;
 	align-items: center;
-	justify-content: flex-start;
-	padding: 8px 12px 8px 12px;
-	height: 34px;
-	box-sizing: border-box;
-	background: rgba(255, 255, 255, 0.1);
+	margin-bottom: 0;
+}
+.topbar {
+	width: 100%;
+	height: var(--control-height);
+	padding: 8px 12px 8px 37px;
+	background: transparent;
 	border-radius: 8px;
-	margin-bottom: 3px;
-}
-
-.left-buttons {
+	color: transparent;
+	font-size: 14px;
+	font-family: inherit;
+	box-sizing: border-box;
+	user-select: none;
+	pointer-events: none;
 	display: flex;
 	align-items: center;
-	margin-right: auto;
+	border: none;
 }
-
 .right-buttons {
 	display: flex;
 	align-items: center;
