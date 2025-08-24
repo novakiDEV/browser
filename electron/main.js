@@ -47,8 +47,10 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       webviewTag: true,
-      sandbox: false,
-      webSecurity: false
+  // Keep the main renderer unsandboxed to allow the preload to function as intended.
+  sandbox: false,
+  // Enable webSecurity in production. Dev server often requires relaxed CORS/headers, so keep it off in dev.
+  webSecurity: isDev ? false : true
     }
   };
   if (WinClass !== BrowserWindow) {
@@ -142,9 +144,13 @@ function createWindow() {
   }
 
   mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
-    const preloadPath = path.join(__dirname, 'webview-preload.js');
-    webPreferences.preload = preloadPath;
-    webPreferences.contextIsolation = false;
+  const preloadPath = path.join(__dirname, 'webview-preload.js');
+  // Harden webview preferences: enable contextIsolation and sandboxing in non-dev environments.
+  webPreferences.preload = preloadPath;
+  webPreferences.contextIsolation = true;
+  webPreferences.nodeIntegration = false;
+  webPreferences.sandbox = isDev ? false : true;
+  webPreferences.webSecurity = isDev ? false : true;
   });
 
   mainWindow.on('closed', () => {

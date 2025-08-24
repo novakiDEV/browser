@@ -2,7 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src *; frame-src https: http:; child-src https: http:">
+    <!--
+      CSP will be injected by script below: a relaxed dev CSP is used when served from localhost,
+      otherwise a stricter production CSP is applied.
+    -->
+    <script>
+      (function(){
+        try {
+          const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+          const meta = document.createElement('meta');
+          meta.httpEquiv = 'Content-Security-Policy';
+          if (isLocal) {
+            meta.setAttribute('content', "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src *; frame-src https: http:; child-src https: http:");
+          } else {
+            meta.setAttribute('content', "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https:; frame-src https: http:; child-src https: http:");
+          }
+          document.head.appendChild(meta);
+        } catch (e) {
+          // If anything goes wrong, append a permissive CSP to avoid blocking dev.
+          try {
+            const fallback = document.createElement('meta');
+            fallback.httpEquiv = 'Content-Security-Policy';
+            fallback.setAttribute('content', "default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; connect-src *; frame-src https: http:; child-src https: http:");
+            document.head.appendChild(fallback);
+          } catch {}
+        }
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>cnvrs Browser Beta Edition</title>
   </head>
