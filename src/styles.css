@@ -249,43 +249,6 @@ body.mica-enabled { background: transparent; }
 	outline: none;
 }
 
-.context-menu {
-	position: fixed;
-	top: 0;
-	left: 0;
-	display: none;
-	min-width: 220px;
-	padding: 6px;
-	box-sizing: border-box;
-	background: rgba(255, 255, 255, 0.10);
-	border: 1px solid rgba(255, 255, 255, 0.18);
-	border-radius: var(--win-radius);
-	box-shadow: 0 8px 22px rgba(0,0,0,0.35);
-	backdrop-filter: blur(8px);
-	z-index: 1000;
-	color: #fff;
-}
-.context-menu .menu-item {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 8px 10px;
-	border-radius: 6px;
-	cursor: pointer;
-	user-select: none;
-	white-space: nowrap;
-	font-size: 13px;
-}
-.context-menu .menu-item:hover { background: rgba(255,255,255,0.12); }
-.context-menu .menu-item.disabled { opacity: 0.5; pointer-events: none; }
-.context-menu .separator {
-	height: 1px;
-	background: rgba(255,255,255,0.12);
-	margin: 6px 4px;
-}
-.context-menu .menu-icon { width: 14px; height: 14px; fill: rgba(255,255,255,0.8); }
-.context-menu .menu-icon.flip-x { transform: scaleX(-1); }
-
 /* Themed scrollbars for the host UI */
 *::-webkit-scrollbar {
 	width: var(--scrollbar-size);
