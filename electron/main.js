@@ -133,7 +133,11 @@ function createWindow() {
     return true;
   });
 
-  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.once('ready-to-show', () => {
+    // Set the zoom factor to 90% for the entire Electron app
+    mainWindow.webContents.setZoomFactor(0.9)
+    mainWindow.show()
+  });
 
   if (isDev) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
