@@ -90,7 +90,7 @@ function createWindow() {
         { name: 'All Files', extensions: ['*'] }
       ]
     });
-    if (res.canceled || !res.filePath) return false;
+    if (res.canceled || !res.filePath) return false; 
     const filePath = res.filePath;
     await new Promise((resolve, reject) => {
       try {
