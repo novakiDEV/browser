@@ -3,8 +3,14 @@ import { searchIconSVG, globeSVG } from './icons.js'
 
 export function initFavicon(searchIconEl) {
   const showSearchIcon = () => searchIconEl && (searchIconEl.innerHTML = searchIconSVG)
-  const showFavicon = (url) => searchIconEl && (searchIconEl.innerHTML = `<img src="${url}" width="16" height="16" style="filter: none;">`)
-  const showGlobeIcon = () => searchIconEl && (searchIconEl.innerHTML = globeSVG)
+  const showFavicon = (url) => {
+    if (!searchIconEl) return
+    searchIconEl.innerHTML = `<img src="${url}" width="16" height="16" style="filter: none;">`
+  }
+  const showGlobeIcon = () => {
+    if (!searchIconEl) return
+    searchIconEl.innerHTML = globeSVG
+  }
 
   const cleanUrl = (url) => url.replace(/https?:\/\//, '').split('/')[0]
 
@@ -30,16 +36,21 @@ export function initFavicon(searchIconEl) {
   }
 
   const loadFavicon = (domain) => {
-    const ico = `https://${domain}/favicon.ico`
+    const ico = domain ? `https://${domain}/favicon.ico` : null
+    if (!ico) {
+      state.currentFaviconUrl = null
+      showGlobeIcon()
+      return
+    }
+
+    state.currentFaviconUrl = null
     tryLoad(ico, (okUrl) => {
       showFavicon(okUrl)
       state.currentFaviconUrl = okUrl
-  window.__haveFaviconOnce = true
+      window.__haveFaviconOnce = true
     }, () => {
-      if (!state.currentFaviconUrl) {
-        showGlobeIcon()
-        state.currentFaviconUrl = null
-      }
+      state.currentFaviconUrl = null
+      showGlobeIcon()
     })
   }
 
@@ -59,11 +70,12 @@ export function initFavicon(searchIconEl) {
       tryLoad(best, (ok) => {
         showFavicon(ok)
         state.currentFaviconUrl = ok
-    window.__haveFaviconOnce = true
+        window.__haveFaviconOnce = true
       }, () => loadFavicon(domain))
-    } else {
-      loadFavicon(domain)
+      return
     }
+
+    loadFavicon(domain)
   }
 
   return { showSearchIcon, showFavicon, showGlobeIcon, cleanUrl, updateUrlDisplay, loadFavicon, loadFromCandidates }
