@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   attachWebviewHandlers(
     webview,
-    null, // No context menu show function
-    null, // No context menu hide function
     (url) => {
       const domain = fav.cleanUrl(url)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)

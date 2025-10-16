@@ -1,4 +1,4 @@
-export function attachWebviewHandlers(webview, showContextMenu, hideContextMenu, onNavigated, onFavicons) {
+export function attachWebviewHandlers(webview, onNavigated, onFavicons) {
   if (!webview) return
   const statusEl = document.getElementById('status-center')
   const loadbar = document.getElementById('loadbar')

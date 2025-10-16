@@ -1,17 +1,6 @@
 const { ipcRenderer } = require('electron');
 
-window.addEventListener('contextmenu', (e) => {
-  try {
-    let imageSrc = null;
-    try {
-      const img = e.target && (e.target.closest ? e.target.closest('img') : null);
-      if (img && img.src) {
-        imageSrc = new URL(img.getAttribute('src') || img.src, location.href).href;
-      }
-    } catch {}
-  ipcRenderer.sendToHost('context-menu', { x: e.clientX, y: e.clientY, imageSrc, prevented: e.defaultPrevented === true });
-  } catch {}
-});
+
 
 window.addEventListener('mousedown', (e) => {
   if (e.button !== 2) {
