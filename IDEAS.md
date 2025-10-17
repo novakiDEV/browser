@@ -1,0 +1,4 @@
+# Ideas
+
+- tabs
+- better ui
