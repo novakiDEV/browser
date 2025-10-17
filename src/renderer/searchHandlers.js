@@ -4,20 +4,38 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
   if (!searchInput) return
   document.querySelector('.search-container')?.addEventListener('click', () => searchInput.focus())
 
+  const restoreDisplay = () => {
+    const currentUrl = webview?.getURL?.()
+    if (currentUrl && currentUrl !== 'about:blank') {
+      const domain = helpers.cleanUrl(currentUrl)
+      helpers.updateUrlDisplay(domain, searchInput, urlOverlay)
+      if (state.currentFaviconUrl) {
+        helpers.showFavicon(state.currentFaviconUrl)
+      } else {
+        helpers.showGlobeIcon()
+      }
+    } else {
+      urlOverlay.style.display = 'none'
+      searchInput.classList.remove('has-url')
+    }
+  }
+
   searchInput.addEventListener('focus', () => {
     helpers.showSearchIcon()
     urlOverlay.style.display = 'none'
     searchInput.classList.remove('has-url')
+    const currentUrl = webview?.getURL?.()
+    if (currentUrl && currentUrl !== 'about:blank') {
+      searchInput.value = currentUrl
+      try { searchInput.setSelectionRange(0, currentUrl.length) } catch {}
+    }
   })
+
+  searchInput.addEventListener('blur', restoreDisplay)
 
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.search-container')) {
-      const currentUrl = webview?.getURL()
-      if (currentUrl && currentUrl !== 'about:blank') {
-        const domain = helpers.cleanUrl(currentUrl)
-        helpers.updateUrlDisplay(domain, searchInput, urlOverlay)
-        state.currentFaviconUrl ? helpers.showFavicon(state.currentFaviconUrl) : helpers.showGlobeIcon()
-      }
+      restoreDisplay()
     }
   })
 
@@ -35,6 +53,8 @@ export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) 
           url = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
         }
         webview.src = url;
+        try { searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length) } catch {}
+        searchInput.blur()
       }
     }
   }
