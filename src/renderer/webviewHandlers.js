@@ -39,6 +39,53 @@ export function attachWebviewHandlers(webview, onNavigated, onFavicons) {
     } catch {}
   })
 
+  // Handle system color scheme preference by injecting JavaScript
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  const updateColorScheme = () => {
+    const isDark = mediaQuery.matches
+    const scheme = isDark ? 'dark' : 'light'
+    try {
+      // Inject CSS color-scheme property
+      webview.insertCSS(`html { color-scheme: ${scheme}; }`)
+      
+      // Inject JavaScript to modify the page for dark/light mode
+      const script = `
+        (function() {
+          // Set data attributes that websites can detect
+          document.documentElement.setAttribute('data-theme', '${scheme}');
+          document.documentElement.setAttribute('data-color-scheme', '${scheme}');
+          
+          // Dispatch custom event for websites to listen to
+          window.dispatchEvent(new CustomEvent('themechange', { 
+            detail: { theme: '${scheme}', dark: ${isDark} }
+          }));
+          
+          // Some sites check for this class
+          document.documentElement.classList.toggle('dark-theme', ${isDark});
+          document.documentElement.classList.toggle('light-theme', !${isDark});
+          
+          // Override media query if site doesn't respect color-scheme
+          if (window.matchMedia) {
+            const originalMatchMedia = window.matchMedia;
+            window.matchMedia = function(query) {
+              if (query === '(prefers-color-scheme: dark)') {
+                return { matches: ${isDark}, media: query, addListener: function(){}, removeListener: function(){} };
+              }
+              if (query === '(prefers-color-scheme: light)') {
+                return { matches: ${!isDark}, media: query, addListener: function(){}, removeListener: function(){} };
+              }
+              return originalMatchMedia.call(this, query);
+            };
+          }
+        })();
+      `
+      webview.executeJavaScript(script)
+    } catch {}
+  }
+  
+  webview.addEventListener('dom-ready', updateColorScheme)
+  mediaQuery.addEventListener('change', updateColorScheme)
+
   webview.addEventListener('did-start-loading', () => { setProgress(15); setStatus('') })
   webview.addEventListener('did-stop-loading', () => { setProgress(100); setTimeout(() => setProgress(0), 500) })
 }
