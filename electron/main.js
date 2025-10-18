@@ -39,9 +39,18 @@ function createWindow() {
     width: 1200,
     height: 800,
     show: false,
-    frame: false,
     autoHideMenuBar: true,
     icon: path.join(__dirname, '..', 'icons', 'appicon.png'),
+    ...(process.platform === 'win32' ? {
+      titleBarStyle: 'hidden',
+      titleBarOverlay: {
+        color: '#00000000',
+        symbolColor: '#ffffff',
+        height: 34
+      }
+    } : {
+      frame: false
+    }),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

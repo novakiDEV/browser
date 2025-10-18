@@ -9,11 +9,26 @@ html, body { overflow: hidden; }
 	--scrollbar-track: rgba(255,255,255,0.08);
 	--scrollbar-thumb: rgba(255,255,255,0.35);
 	--scrollbar-thumb-hover: rgba(255,255,255,0.55);
+	--titlebar-height: min(env(titlebar-area-height, 34px), 34px);
+	--sidebar-width: 320px;
 }
 body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: #000000; color: #ffffff; }
 /* When Mica is enabled, make the window background transparent so the OS effect shows through. */
 body.mica-enabled { background: transparent; }
-.titlebar { display: none; }
+.titlebar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	position: fixed;
+	top: env(titlebar-area-y, 0px);
+	left: env(titlebar-area-x, calc(var(--sidebar-width) + (var(--gap) * 2)));
+	width: env(titlebar-area-width, calc(100vw - (var(--sidebar-width) + (var(--gap) * 3))));
+	height: var(--titlebar-height);
+	-webkit-app-region: drag;
+	z-index: 9999;
+	border-radius: 0 0 var(--win-radius) var(--win-radius);
+	pointer-events: auto;
+}
 .app-shell {
 	position: relative;
 	padding: var(--gap);
@@ -26,8 +41,8 @@ body.mica-enabled { background: transparent; }
 }
 .app-shell > * { min-width: 0; min-height: 0; }
 #sidebar.sidebar {
-	width: 320px;
-	flex: 0 0 320px;
+	width: var(--sidebar-width);
+	flex: 0 0 var(--sidebar-width);
 	padding: 0;
 	display: flex;
 	flex-direction: column;
@@ -296,6 +311,7 @@ body.mica-enabled { background: transparent; }
 	outline: none;
 	overflow: hidden;
 	position: relative;
+	margin-top: var(--titlebar-height);
 }
 
 #contentview webview {
