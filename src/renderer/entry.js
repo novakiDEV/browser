@@ -3,6 +3,7 @@ import { applyTheme } from './theme.js'
 import { initFavicon } from './favicon.js'
 import { attachWebviewHandlers } from './webviewHandlers.js'
 import { attachSearchHandlers } from './searchHandlers.js'
+import { initLockIcon } from './lockIcon.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const webview = document.getElementById('main-webview')
@@ -13,6 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await applyTheme(searchInput)
 
   const fav = initFavicon(searchIconEl)
+  const lock = initLockIcon()
 
   attachWebviewHandlers(
     webview,
@@ -20,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const domain = fav.cleanUrl(url)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)
       fav.loadFavicon(domain)
+      lock.updateLockIcon(url)
     },
     (icons) => {
       try {
@@ -36,6 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentUrl && currentUrl !== 'about:blank') {
       const domain = fav.cleanUrl(currentUrl)
       fav.updateUrlDisplay(domain, searchInput, urlOverlay)
+      lock.updateLockIcon(currentUrl)
       if (!window.__haveFaviconOnce) { 
         fav.loadFavicon(domain)
       }

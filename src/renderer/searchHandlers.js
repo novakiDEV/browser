@@ -2,7 +2,11 @@ import { state } from './state.js'
 
 export function attachSearchHandlers(searchInput, urlOverlay, webview, helpers) {
   if (!searchInput) return
-  document.querySelector('.search-container')?.addEventListener('click', () => searchInput.focus())
+  document.querySelector('.search-container')?.addEventListener('click', (e) => {
+    if (!e.target.closest('.lock-button') && !e.target.closest('.menu-button')) {
+      searchInput.focus()
+    }
+  })
 
   const restoreDisplay = () => {
     const currentUrl = webview?.getURL?.()

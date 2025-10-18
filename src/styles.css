@@ -181,10 +181,69 @@ body.mica-enabled { background: transparent; }
 	fill: rgba(255, 255, 255, 0.6);
 }
 
+.menu-button {
+	position: absolute;
+	right: 36px;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	background: none;
+	border: none;
+	padding: 4px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	transition: background-color 0.2s ease;
+	width: 24px;
+	height: 24px;
+}
+
+.menu-button:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-button svg {
+	width: 16px;
+	height: 16px;
+	fill: rgba(255, 255, 255, 0.6);
+}
+
+.lock-button {
+	position: absolute;
+	right: 8px;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	background: none;
+	border: none;
+	padding: 4px;
+	cursor: default;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 4px;
+	width: 24px;
+	height: 24px;
+	pointer-events: none;
+}
+
+.lock-button svg {
+	width: 16px;
+	height: 16px;
+	fill: rgba(255, 255, 255, 0.6);
+	transition: fill 0.2s ease;
+}
+
+.lock-button.insecure svg {
+	fill: rgba(255, 120, 120, 0.8);
+}
+
 .search-input {
 	width: 100%;
 	height: var(--control-height);
-	padding: 8px 12px 8px 37px;
+	padding: 8px 68px 8px 37px;
 	background: rgba(255, 255, 255, 0.1);
 	border: none;
 	border-radius: 8px;
